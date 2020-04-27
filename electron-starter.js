@@ -1,5 +1,6 @@
 const electron = require("electron");
 const simpleGit = require("simple-git")();
+const os = require("os");
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const dialog = electron.dialog;
@@ -11,6 +12,13 @@ const url = require("url");
 let mainWindow;
 
 function createWindow() {
+  BrowserWindow.addDevToolsExtension(
+    path.join(
+      os.homedir(),
+      "/Library/Application Support/Google/Chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/4.6.0_0"
+    )
+  );
+
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
@@ -24,6 +32,7 @@ function createWindow() {
       slashes: true,
     });
   mainWindow.loadURL(startUrl);
+  mainWindow.webContents.openDevTools();
 
   mainWindow.on("closed", function () {
     mainWindow = null;

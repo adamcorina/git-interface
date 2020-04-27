@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
-import "./RepositorySelection.css";
+import { connect } from "react-redux";
 import { useHistory } from "react-router-dom";
+import { setRepo } from "../actions";
+
+import "./RepositorySelection.css";
 
 const electron = window.require("electron");
 const ipcRenderer = electron.ipcRenderer;
 
-function RepositorySelection() {
+function RepositorySelection({ dispatch }) {
   const history = useHistory();
   const [searchPath, setSearchPath] = useState("");
   const [isValidSearch, setIsValidSearch] = useState(true);
@@ -19,6 +22,7 @@ function RepositorySelection() {
     setIsValidSearch(results.isRepo);
 
     if (results.isRepo) {
+      dispatch(setRepo(results.path));
       history.push("repository-management");
     }
   };
@@ -49,4 +53,4 @@ function RepositorySelection() {
   );
 }
 
-export default RepositorySelection;
+export default connect()(RepositorySelection);
