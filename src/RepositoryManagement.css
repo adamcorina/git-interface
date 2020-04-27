@@ -1,0 +1,21 @@
+.repository-management {
+  background-color: #282c34;
+  min-height: 100vh;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.repository-management .back {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.repository-management .back img {
+  height: 50px;
+  filter: invert(100%);
+}

@@ -1,4 +1,5 @@
 const electron = require("electron");
+const simpleGit = require("simple-git")();
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const dialog = electron.dialog;
@@ -43,15 +44,26 @@ app.on("activate", function () {
   }
 });
 
-ipcMain.on("selectDirectory", function () {
+ipcMain.on("selectDirectory", (event) => {
   dialog
     .showOpenDialog(mainWindow, {
       properties: ["openDirectory"],
     })
     .then((directory) => {
-      if(directory && directory){
-          
-          console.log(directory.filePaths);
+      if (directory && directory.filePaths && directory.filePaths.length) {
+        simpleGit.cwd(directory.filePaths[0]).checkIsRepo((err, isRepo) => {
+          if (err) {
+            event.sender.send("selectedDirectory", {
+              isRepo: false,
+              path: directory.filePaths[0],
+            });
+            return;
+          }
+          event.sender.send("selectedDirectory", {
+            isRepo,
+            path: directory.filePaths[0],
+          });
+        });
       }
     });
 });
