@@ -1,37 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { setRepo } from "../actions";
+import { initializeFolderSelection } from "../actions";
 
 import "./RepositorySelection.css";
 
-const electron = window.require("electron");
-const ipcRenderer = electron.ipcRenderer;
-
-function RepositorySelection({ dispatch }) {
+function RepositorySelection({ repo, dispatch }) {
   const history = useHistory();
-  const [searchPath, setSearchPath] = useState("");
-  const [isValidSearch, setIsValidSearch] = useState(true);
 
   const openDirectory = () => {
-    ipcRenderer.send("selectDirectory");
-  };
-
-  const onDirectorySelection = (results) => {
-    setSearchPath(results.path);
-    setIsValidSearch(results.isRepo);
-
-    if (results.isRepo) {
-      dispatch(setRepo(results.path));
-      history.push("repository-management");
-    }
+    dispatch(initializeFolderSelection());
   };
 
   useEffect(() => {
-    ipcRenderer.on("selectedDirectory", (event, results) => {
-      onDirectorySelection(results);
-    });
-  }, []);
+    if (repo.path && repo.isRepo) {
+      history.push("repository-management");
+    }
+  }, [repo.path]);
 
   return (
     <div className="repository-selection">
@@ -39,9 +24,9 @@ function RepositorySelection({ dispatch }) {
       <div>
         <input
           type="text"
-          value={searchPath}
+          value={repo.path}
           readOnly
-          className={!isValidSearch ? "invalid" : ""}
+          className={!repo.isRepo ? "invalid" : ""}
         />
         <img
           className="browse-icon"
@@ -53,4 +38,9 @@ function RepositorySelection({ dispatch }) {
   );
 }
 
-export default connect()(RepositorySelection);
+function mapStateToProps(state) {
+  const { repo } = state;
+  return { repo };
+}
+
+export default connect(mapStateToProps)(RepositorySelection);

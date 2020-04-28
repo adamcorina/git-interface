@@ -12,7 +12,9 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.1",
     "redux": "^4.0.5",
-    "simple-git": "^1.132.0"
+    "redux-thunk": "^2.3.0",
+    "simple-git": "^1.132.0",
+    "uuid4": "^1.1.4"
   },
   "main": "electron-starter.js",
   "homepage": "./",

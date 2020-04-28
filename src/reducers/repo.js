@@ -1,7 +1,7 @@
-const repo = (state = null, action) => {
+const repo = (state = { path: "", isRepo: true }, action) => {
   switch (action.type) {
-    case "SET_REPO":
-      return { path: action.path };
+    case "SET_FOLDER":
+      return { path: action.path, isRepo: action.isRepo };
     default:
       return state;
   }

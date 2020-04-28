@@ -1,20 +1,28 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { setFolder } from "../actions";
+
 import "./RepositoryManagement.css";
 
-function RepositoryManagement({ repo }) {
+function RepositoryManagement({ repo, dispatch }) {
   const history = useHistory();
   useEffect(() => {
-    if (repo === null) {
+    if (!repo.path) {
       history.push("/");
     }
-  }, [repo]);
+  }, []);
 
   return (
     <div className="repository-management">
-      <Link className="back" to="/">
+      <Link
+        className="back"
+        to="/"
+        onClick={() => {
+          dispatch(setFolder({ path: "", isRepo: true }));
+        }}
+      >
         <img src={require("./back.png")} />
       </Link>
     </div>

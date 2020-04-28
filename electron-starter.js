@@ -53,7 +53,18 @@ app.on("activate", function () {
   }
 });
 
-ipcMain.on("selectDirectory", (event) => {
+ipcMain.on("asynchronous-message", (event, arg) => {
+  const {uuid, messageType, data} = arg;
+  switch(messageType){
+    case 'INITIALIZE_FOLDER_SELECTION':
+      initializeFolderSelection(event, uuid);
+    default:
+
+
+  }
+});
+
+const initializeFolderSelection = (event, uuid) => {
   dialog
     .showOpenDialog(mainWindow, {
       properties: ["openDirectory"],
@@ -62,17 +73,23 @@ ipcMain.on("selectDirectory", (event) => {
       if (directory && directory.filePaths && directory.filePaths.length) {
         simpleGit.cwd(directory.filePaths[0]).checkIsRepo((err, isRepo) => {
           if (err) {
-            event.sender.send("selectedDirectory", {
-              isRepo: false,
-              path: directory.filePaths[0],
+            event.sender.send("asynchronous-reply", {
+              uuid,
+              data: {
+                isRepo: false,
+                path: directory.filePaths[0]
+              }
             });
             return;
           }
-          event.sender.send("selectedDirectory", {
-            isRepo,
-            path: directory.filePaths[0],
+          event.sender.send("asynchronous-reply", {
+            uuid,
+            data: {
+              isRepo,
+              path: directory.filePaths[0]
+            }
           });
         });
       }
     });
-});
+};
