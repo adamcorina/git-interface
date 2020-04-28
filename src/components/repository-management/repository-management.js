@@ -2,14 +2,14 @@ import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { setFolder } from "../actions";
+import { setFolder } from "../../actions";
 
-import "./RepositoryManagement.css";
+import "./repository-management.css";
 
-function RepositoryManagement({ repo, dispatch }) {
+function RepositoryManagement({ currentFolder, dispatch }) {
   const history = useHistory();
   useEffect(() => {
-    if (!repo.path) {
+    if (!currentFolder.path) {
       history.push("/");
     }
   }, []);
@@ -30,8 +30,8 @@ function RepositoryManagement({ repo, dispatch }) {
 }
 
 function mapStateToProps(state) {
-  const { repo } = state;
-  return { repo };
+  const { currentFolder } = state;
+  return { currentFolder };
 }
 
 export default connect(mapStateToProps)(RepositoryManagement);

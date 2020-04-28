@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { initializeFolderSelection } from "../actions";
+import { initializeFolderSelection } from "../../actions";
 
-import "./RepositorySelection.css";
+import "./repository-selection.css";
 
-function RepositorySelection({ repo, dispatch }) {
+function RepositorySelection({ currentFolder, dispatch }) {
   const history = useHistory();
 
   const openDirectory = () => {
@@ -13,10 +13,10 @@ function RepositorySelection({ repo, dispatch }) {
   };
 
   useEffect(() => {
-    if (repo.path && repo.isRepo) {
+    if (currentFolder.path && currentFolder.isRepo) {
       history.push("repository-management");
     }
-  }, [repo.path]);
+  }, [currentFolder.path]);
 
   return (
     <div className="repository-selection">
@@ -24,9 +24,9 @@ function RepositorySelection({ repo, dispatch }) {
       <div>
         <input
           type="text"
-          value={repo.path}
+          value={currentFolder.path}
           readOnly
-          className={!repo.isRepo ? "invalid" : ""}
+          className={!currentFolder.isRepo ? "invalid" : ""}
         />
         <img
           className="browse-icon"
@@ -39,8 +39,8 @@ function RepositorySelection({ repo, dispatch }) {
 }
 
 function mapStateToProps(state) {
-  const { repo } = state;
-  return { repo };
+  const { currentFolder } = state;
+  return { currentFolder };
 }
 
 export default connect(mapStateToProps)(RepositorySelection);

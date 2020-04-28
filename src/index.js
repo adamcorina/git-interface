@@ -4,8 +4,8 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { createStore, applyMiddleware } from "redux";
 import thunk from "redux-thunk";
 import { Provider } from "react-redux";
-import RepositorySelection from "./components/RepositorySelection";
-import RepositoryManagement from "./components/RepositoryManagement";
+import RepositorySelection from "./components/repository-selection/repository-selection";
+import RepositoryManagement from "./components/repository-management/repository-management";
 import rootReducer from "./reducers";
 
 import "./index.css";

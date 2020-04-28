@@ -5,10 +5,11 @@ const ipcRenderer = electron.ipcRenderer
 const callCache = {}
 
 ipcRenderer.on('asynchronous-reply', (event, arg) => {
-    const { resolve, reject } = callCache[arg.uuid]
+    const { resolve } = callCache[arg.uuid]
     resolve(arg.data)
     delete callCache[arg.uuid]
 })
+
 export default function callService(messageType, data) {
     const uuid = uuid4() //generate the unique call id
     const promise = new Promise((resolve, reject) => {

@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux'
-import repo from './repo'
+import currentFolder from './current-folder'
 
 export default combineReducers({
-  repo
+  currentFolder: currentFolder
 })
