@@ -7,10 +7,14 @@
   flex: 1 1 auto;
   display: flex;
   flex-wrap: nowrap;
-  padding: 5px;
+  margin: 20px;
   align-items: center;
   justify-content: center;
   flex-direction: column;
+}
+
+.repository-selection > div:not(:last-child) {
+  border-right: 1px solid white;
 }
 
 .repository-selection .browse-icon {
