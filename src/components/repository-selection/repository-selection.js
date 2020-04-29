@@ -23,6 +23,23 @@ function RepositorySelection({ currentFolder, repositories, dispatch }) {
     }
   }, [currentFolder.path]);
 
+  const renderRepositories = () => {
+    return repositories.map((repository) => {
+      const pathParts = repository.split("/");
+      const repositoryName = pathParts[pathParts.length - 1];
+      return (
+        <div
+          className="imported-repository"
+          key={repository}
+          onClick={() => selectRepository(repository)}
+        >
+          {repositoryName}
+          <div className="caption">{repository}</div>
+        </div>
+      );
+    });
+  };
+
   return (
     <div className="repository-selection">
       <div>
@@ -44,17 +61,7 @@ function RepositorySelection({ currentFolder, repositories, dispatch }) {
       {repositories && repositories.length ? (
         <div>
           <div className="subtitle">Imported repositories: </div>
-          <div className="imported-repositories">
-            {repositories.map((repository) => (
-              <div
-                className="imported-repository"
-                key={repository}
-                onClick={() => selectRepository(repository)}
-              >
-                {repository}
-              </div>
-            ))}
-          </div>
+          <div className="imported-repositories">{renderRepositories()}</div>
         </div>
       ) : null}
     </div>
