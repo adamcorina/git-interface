@@ -5,7 +5,7 @@ import { initializeFolderSelection } from "../../actions";
 
 import "./repository-selection.css";
 
-function RepositorySelection({ currentFolder, dispatch }) {
+function RepositorySelection({ currentFolder, repositories, dispatch }) {
   const history = useHistory();
 
   const openDirectory = () => {
@@ -20,27 +20,39 @@ function RepositorySelection({ currentFolder, dispatch }) {
 
   return (
     <div className="repository-selection">
-      <div>Select a repository you want to start with: </div>
       <div>
-        <input
-          type="text"
-          value={currentFolder.path}
-          readOnly
-          className={!currentFolder.isRepo ? "invalid" : ""}
-        />
-        <img
-          className="browse-icon"
-          src={require("./browse.png")}
-          onClick={openDirectory}
-        />
+        <div>Select a repository you want to import: </div>
+        <div className="browse-files">
+          <input
+            type="text"
+            value={currentFolder.path || ""}
+            readOnly
+            className={!currentFolder.isRepo ? "invalid" : ""}
+          />
+          <img
+            className="browse-icon"
+            src={require("./browse.png")}
+            onClick={openDirectory}
+          />
+        </div>
       </div>
+      {repositories && repositories.length ? (
+        <div>
+          <div>Imported repositories: </div>
+          <div>
+            {repositories.map((repository) => (
+              <div key={repository}>{repository}</div>
+            ))}
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
 
 function mapStateToProps(state) {
-  const { currentFolder } = state;
-  return { currentFolder };
+  const { currentFolder, repositories } = state;
+  return { currentFolder, repositories };
 }
 
 export default connect(mapStateToProps)(RepositorySelection);

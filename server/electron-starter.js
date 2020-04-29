@@ -1,6 +1,7 @@
 const electron = require("electron");
 const simpleGit = require("simple-git")();
 const os = require("os");
+const fs = require("fs");
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const dialog = electron.dialog;
@@ -8,6 +9,8 @@ const ipcMain = electron.ipcMain;
 
 const path = require("path");
 const url = require("url");
+
+const repositories = require("./db/repositories.json");
 
 let mainWindow;
 
@@ -24,6 +27,7 @@ function createWindow() {
     height: 600,
     webPreferences: { nodeIntegration: true },
   });
+
   const startUrl =
     process.env.ELECTRON_START_URL ||
     url.format({
@@ -54,42 +58,62 @@ app.on("activate", function () {
 });
 
 ipcMain.on("asynchronous-message", (event, arg) => {
-  const {uuid, messageType, data} = arg;
-  switch(messageType){
-    case 'INITIALIZE_FOLDER_SELECTION':
-      initializeFolderSelection(event, uuid);
+  const { uuid, messageType, data } = arg;
+  switch (messageType) {
+    case "INITIALIZE_DIRECTORY_SELECTION":
+      initializeDirectorySelection(event, uuid);
+      break;
+    case "GET_REPOSITORIES":
+      getRepositories(event, uuid);
+      break;
     default:
-
-
+      break;
   }
 });
 
-const initializeFolderSelection = (event, uuid) => {
-  dialog
-    .showOpenDialog(mainWindow, {
-      properties: ["openDirectory"],
-    })
-    .then((directory) => {
-      if (directory && directory.filePaths && directory.filePaths.length) {
-        simpleGit.cwd(directory.filePaths[0]).checkIsRepo((err, isRepo) => {
-          if (err) {
-            event.sender.send("asynchronous-reply", {
-              uuid,
-              data: {
-                isRepo: false,
-                path: directory.filePaths[0]
-              }
-            });
-            return;
-          }
-          event.sender.send("asynchronous-reply", {
-            uuid,
-            data: {
-              isRepo,
-              path: directory.filePaths[0]
-            }
-          });
-        });
+const asynchronousReply = (event, uuid, data) => {
+  event.sender.send("asynchronous-reply", { uuid, data });
+};
+
+const getRepositories = (event, uuid) => {
+  asynchronousReply(event, uuid, { repositories });
+};
+
+const addRepository = (path, callback) => {
+  if (repositories.indexOf(path) > -1) {
+    callback();
+  } else {
+    repositories.push(path);
+    const pathToRepositories = __dirname + "/db/repositories.json";
+    fs.writeFile(pathToRepositories, JSON.stringify(repositories), (err) => {
+      if (err) {
+        console.log(err);
+        return;
       }
+      callback();
+    });
+  }
+};
+
+const onDirectorySelected = (event, uuid, directory) => {
+  if (directory && directory.filePaths && directory.filePaths.length) {
+    const path = directory.filePaths[0];
+    simpleGit.cwd(path).checkIsRepo((err, isRepo) => {
+      if (err) {
+        asynchronousReply(event, uuid, { isRepo: false, path });
+        return;
+      }
+      addRepository(path, () => {
+        asynchronousReply(event, uuid, { isRepo, path });
+      });
+    });
+  }
+};
+
+const initializeDirectorySelection = (event, uuid) => {
+  dialog
+    .showOpenDialog(mainWindow, { properties: ["openDirectory"] })
+    .then((directory) => {
+      onDirectorySelected(event, uuid, directory);
     });
 };
