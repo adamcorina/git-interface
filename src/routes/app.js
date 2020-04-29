@@ -4,10 +4,14 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import RepositorySelection from "./repository-selection/repository-selection";
 import RepositoryManagement from "./repository-management/repository-management";
 
+import Loader from "../components/loader/loader";
+
 import { getImportedRepositories } from "../actions";
 
+import "./app.css";
+
 function App({ repositories, dispatch }) {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     dispatch(getImportedRepositories());
   }, []);
@@ -19,18 +23,22 @@ function App({ repositories, dispatch }) {
   }, [repositories]);
 
   return loading ? (
-    ""
+    <div className="app">
+      <Loader />
+    </div>
   ) : (
-    <Router>
-      <Switch>
-        <Route exact path="/" component={RepositorySelection} />
-        <Route
-          exact
-          path="/repository-management"
-          component={RepositoryManagement}
-        />
-      </Switch>
-    </Router>
+    <div className="app">
+      <Router>
+        <Switch>
+          <Route exact path="/" component={RepositorySelection} />
+          <Route
+            exact
+            path="/repository-management"
+            component={RepositoryManagement}
+          />
+        </Switch>
+      </Router>
+    </div>
   );
 }
 

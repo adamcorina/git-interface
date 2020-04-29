@@ -1,0 +1,32 @@
+.menu {
+  width: 30vw;
+  max-width: 300px;
+  padding: 20px 0;
+  height: 100%;
+  border-right: 1px solid #3a404b;
+}
+
+.menu .Collapsible__trigger {
+  background: #282c34;
+  padding: 10px 5px;
+  position: relative;
+  cursor: pointer;
+}
+
+.menu .Collapsible__contentOuter {
+  background: #3a404b;
+}
+
+.menu .menu-item {
+  border-bottom: 1px solid #282c34;
+  padding: 10px 5px;
+  cursor: pointer;
+}
+
+.menu .Collapsible__trigger img {
+  height: 10px;
+  position: absolute;
+  right: 5px;
+  margin: 5px;
+  filter: invert(100%);
+}

@@ -66,6 +66,9 @@ ipcMain.on("asynchronous-message", (event, arg) => {
     case "GET_REPOSITORIES":
       getRepositories(event, uuid);
       break;
+    case "GET_BRANCH_INFO":
+      getBranchInfo(event, uuid, data);
+      break;
     default:
       break;
   }
@@ -116,4 +119,14 @@ const initializeDirectorySelection = (event, uuid) => {
     .then((directory) => {
       onDirectorySelected(event, uuid, directory);
     });
+};
+
+const getBranchInfo = (event, uuid, data) => {
+  simpleGit.cwd(data.path).branchLocal((err, branchInfo) => {
+    if (err) {
+      asynchronousReply(event, uuid, {});
+      return;
+    }
+    asynchronousReply(event, uuid, branchInfo);
+  });
 };

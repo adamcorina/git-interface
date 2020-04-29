@@ -15,6 +15,11 @@ export const setRepositories = (repositoriesInfo) => ({
   ...repositoriesInfo,
 });
 
+export const setBranchInfo = (branchInfo) => ({
+  type: "SET_BRANCH_INFO",
+  ...{ branchInfo },
+});
+
 export const initializeFolderSelection = () => {
   return function (dispatch) {
     return callService("INITIALIZE_DIRECTORY_SELECTION").then((folderInfo) => {
@@ -30,6 +35,14 @@ export const getImportedRepositories = () => {
   return function (dispatch) {
     return callService("GET_REPOSITORIES").then((repositoriesInfo) => {
       dispatch(setRepositories(repositoriesInfo));
+    });
+  };
+};
+
+export const getBranchInfo = (path) => {
+  return function (dispatch) {
+    return callService("GET_BRANCH_INFO", { path }).then((branchInfo) => {
+      dispatch(setBranchInfo(branchInfo));
     });
   };
 };

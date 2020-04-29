@@ -1,25 +1,38 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { useHistory } from "react-router-dom";
 
-import Header from "../header/header";
+import Header from "../../components/header/header";
+import Loader from "../../components/loader/loader";
+import Menu from "../../components/menu/menu";
 
-import { setFolder } from "../../actions";
+import { setFolder, getBranchInfo } from "../../actions";
 
 import "./repository-management.css";
 
 function RepositoryManagement({ currentFolder, dispatch }) {
   const history = useHistory();
+  let [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (currentFolder.branchInfo) {
+      setLoading(false);
+    }
+  }, [currentFolder.branchInfo]);
+
   useEffect(() => {
     if (!currentFolder.path) {
       history.push("/");
     }
+    dispatch(getBranchInfo(currentFolder.path));
   }, []);
 
   const pathParts = currentFolder.path.split("/");
   const repositoryName = pathParts[pathParts.length - 1];
 
-  return (
+  return loading ? (
+    <Loader />
+  ) : (
     <div className="repository-management">
       <Header
         goBackCallback={() => {
@@ -27,6 +40,9 @@ function RepositoryManagement({ currentFolder, dispatch }) {
         }}
         repositoryName={repositoryName}
       />
+      <div className="content">
+        <Menu branches={currentFolder.branchInfo.all}/>
+      </div>
     </div>
   );
 }
