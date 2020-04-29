@@ -99,7 +99,7 @@ const onDirectorySelected = (event, uuid, directory) => {
   if (directory && directory.filePaths && directory.filePaths.length) {
     const path = directory.filePaths[0];
     simpleGit.cwd(path).checkIsRepo((err, isRepo) => {
-      if (err) {
+      if (err || !isRepo) {
         asynchronousReply(event, uuid, { isRepo: false, path });
         return;
       }

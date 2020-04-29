@@ -1,9 +1,6 @@
 .repository-selection {
-  background-color: #282c34;
-  min-height: 100vh;
-  color: white;
   display: flex;
-  
+  min-height: 100vh;
 }
 
 .repository-selection > div {
@@ -16,16 +13,34 @@
   flex-direction: column;
 }
 
-.repository-selection .browse-icon{
-  height:30px;
+.repository-selection .browse-icon {
+  height: 30px;
   filter: invert(100%);
   margin: 0 5px;
   cursor: pointer;
 }
 
-.repository-selection .browse-files{
+.repository-selection .browse-files {
   display: flex;
   align-items: center;
+  padding: 10px;
+}
+
+.repository-selection .imported-repositories {
+  padding: 10px;
+}
+
+.repository-selection .imported-repositories .imported-repository {
+  padding: 10px 5px;
+  cursor: pointer;
+}
+
+.repository-selection .imported-repositories .imported-repository:hover {
+  background: #4c5463;
+}
+
+.repository-selection .subtitle {
+  font-size: 20px;
 }
 
 .repository-selection input {
@@ -33,6 +48,8 @@
   flex: 1 1 auto;
   margin-right: 5px;
   border: 1px solid white;
+  cursor: default;
+  min-width: 100%;
 }
 
 .repository-selection input.invalid {

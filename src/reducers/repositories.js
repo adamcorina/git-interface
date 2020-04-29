@@ -2,8 +2,7 @@ const repositories = (state = null, action) => {
   switch (action.type) {
     case "SET_REPOSITORIES":
       return [...action.repositories];
-    case "SET_FOLDER":
-      console.log(state, action);
+    case "ADD_REPOSITORY":
       if (state.indexOf(action.path) > -1) {
         return state;
       }
