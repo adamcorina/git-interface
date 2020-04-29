@@ -1,7 +1,9 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { Link } from "react-router-dom";
+
+import Header from "../header/header";
+
 import { setFolder } from "../../actions";
 
 import "./repository-management.css";
@@ -14,17 +16,17 @@ function RepositoryManagement({ currentFolder, dispatch }) {
     }
   }, []);
 
+  const pathParts = currentFolder.path.split("/");
+  const repositoryName = pathParts[pathParts.length - 1];
+
   return (
     <div className="repository-management">
-      <Link
-        className="back"
-        to="/"
-        onClick={() => {
+      <Header
+        goBackCallback={() => {
           dispatch(setFolder({ path: "", isRepo: true }));
         }}
-      >
-        <img src={require("./back.png")} />
-      </Link>
+        repositoryName={repositoryName}
+      />
     </div>
   );
 }

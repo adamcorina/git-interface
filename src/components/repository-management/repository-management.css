@@ -6,14 +6,3 @@
   justify-content: center;
   position: relative;
 }
-
-.repository-management .back {
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
-.repository-management .back img {
-  height: 50px;
-  filter: invert(100%);
-}
