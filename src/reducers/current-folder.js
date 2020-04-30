@@ -1,27 +1,23 @@
 const currentFolder = (
-  state = { path: "", isRepo: true, branches: null, logs: null },
+  state = { path: "", isRepo: true, branches: null, current: null, logs: null },
   action
 ) => {
   switch (action.type) {
     case "SET_FOLDER":
-      return { path: action.path, isRepo: action.isRepo, branches: null, logs: null };
+      return {
+        path: action.path,
+        isRepo: action.isRepo,
+        branches: null,
+        current: null,
+        logs: null,
+      };
     case "SET_BRANCHES":
-      return { ...state, branches: action.branches };
+      return { ...state, branches: action.branches, current: action.current };
     case "SET_BRANCH_INFO":
       console.log(action.logs);
-      let oldBranchName = "";
-      Object.values(state.branches).forEach((branchInfo) => {
-        if (branchInfo.current) {
-          oldBranchName = branchInfo.name;
-        }
-      });
       return {
         ...state,
-        branches:{
-          ...state.branches,
-          [oldBranchName]: { ...state.branches[oldBranchName], current: false },
-          [action.branchName]: { ...state.branches[action.branchName], current: true }
-        }
+        current: action.branchName
       };
     default:
       return state;

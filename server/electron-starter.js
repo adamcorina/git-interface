@@ -131,7 +131,7 @@ const getBranches = (event, uuid, data) => {
       asynchronousReply(event, uuid, {});
       return;
     }
-    asynchronousReply(event, uuid, { branches: branchInfo.branches });
+    asynchronousReply(event, uuid, { branches: branchInfo.all, current: branchInfo.current });
   });
 };
 

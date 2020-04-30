@@ -17,6 +17,7 @@ function RepositoryManagement({ currentFolder, dispatch }) {
   useEffect(() => {
     if (currentFolder.branches) {
       setLoading(false);
+      dispatch(getBranchInfo(currentFolder.path, currentFolder.current));
     }
   }, [currentFolder.branches]);
 
@@ -42,15 +43,13 @@ function RepositoryManagement({ currentFolder, dispatch }) {
       />
       <div className="content">
         <Menu
-          branches={Object.keys(currentFolder.branches).map((key) => [
-            key,
-            currentFolder.branches[key].current,
-          ])}
-          optionClick={(branchName) => {dispatch(getBranchInfo(currentFolder.path, branchName))}}
+          branches={currentFolder.branches}
+          currentBranch={currentFolder.current}
+          branchClick={(branchName) => {
+            dispatch(getBranchInfo(currentFolder.path, branchName));
+          }}
         />
-        <div>
-
-        </div>
+        <div></div>
       </div>
     </div>
   );
