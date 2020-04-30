@@ -5,6 +5,7 @@ import { useHistory } from "react-router-dom";
 import Header from "../../components/header/header";
 import Loader from "../../components/loader/loader";
 import Menu from "../../components/menu/menu";
+import CommitHistory from "../../components/commit-history/commit-history";
 
 import { setFolder, getBranches, getBranchInfo } from "../../actions";
 
@@ -41,7 +42,7 @@ function RepositoryManagement({ currentFolder, dispatch }) {
         }}
         repositoryName={repositoryName}
       />
-      <div className="content">
+      <div className="container">
         <Menu
           branches={currentFolder.branches}
           currentBranch={currentFolder.current}
@@ -49,7 +50,9 @@ function RepositoryManagement({ currentFolder, dispatch }) {
             dispatch(getBranchInfo(currentFolder.path, branchName));
           }}
         />
-        <div></div>
+        <div className="content">
+          <CommitHistory logs={currentFolder.logs} />
+        </div>
       </div>
     </div>
   );

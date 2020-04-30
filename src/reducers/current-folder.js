@@ -1,7 +1,4 @@
-const currentFolder = (
-  state = { path: "", isRepo: true, branches: null, current: null, logs: null },
-  action
-) => {
+const currentFolder = (state = { path: "", isRepo: true, branches: null, current: null, logs: null }, action) => {
   switch (action.type) {
     case "SET_FOLDER":
       return {
@@ -14,10 +11,10 @@ const currentFolder = (
     case "SET_BRANCHES":
       return { ...state, branches: action.branches, current: action.current };
     case "SET_BRANCH_INFO":
-      console.log(action.logs);
       return {
         ...state,
-        current: action.branchName
+        current: action.branchName,
+        logs: action.logs,
       };
     default:
       return state;

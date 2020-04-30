@@ -8,7 +8,16 @@
   position: relative;
 }
 
-.repository-management .content {
+.repository-management .container {
   height: calc(100vh - 50px);
   width: 100vw;
+  display: flex;
+}
+
+.repository-management .container .menu {
+  flex: 1 1 30%;
+}
+
+.repository-management .container .content {
+  flex: 1 1 70%;
 }

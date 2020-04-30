@@ -200,7 +200,7 @@ const getBranchInfo = (event, uuid, data) => {
     }
     simpleGit.checkout(data.branchName, (selectedBranchCheckoutError) => {
       if (!selectedBranchCheckoutError) {
-        simpleGit.log({ "-n10": null }, (selectedBranchLogError, selectedBranchLogInfo) => {
+        simpleGit.log({ "-n40": null }, (selectedBranchLogError, selectedBranchLogInfo) => {
           if (!selectedBranchLogError) {
             branchesData.push({ branch: data.branchName, logs: selectedBranchLogInfo.all, index: 0 });
 

@@ -1,0 +1,13 @@
+.commit-history {
+  height: 100%;
+  overflow: scroll;
+}
+
+.commit-history tbody td{
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.commit-history thead th{
+    padding: 30px 0 10px 0;
+}
