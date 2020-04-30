@@ -142,29 +142,58 @@ const getBranchInfo = (event, uuid, data) => {
     if (branchInfoError) {
       return;
     }
-    branchInfo.all.forEach((branchName) => {
-      logCollectorFunctions.push((callback) => {
-        simpleGit.checkout(branchName, (checkoutError) => {
-          if (!checkoutError) {
-            simpleGit.log({ "-n10": null }, (logError, logInfo) => {
-              if (!logError) {
-                branchData.push({
-                  branch: branchName,
-                  logs: logInfo.all,
-                  index: 0,
+    simpleGit.checkout(data.branchName, (selectedBranchCheckoutError) => {
+      if (!selectedBranchCheckoutError) {
+        simpleGit.log(
+          { "-n10": null },
+          (selectedBranchLogError, selectedBranchLogInfo) => {
+            if (!selectedBranchLogError) {
+              branchData.push({
+                branch: data.branchName,
+                logs: selectedBranchLogInfo.all,
+                index: 0,
+              });
+              const lastCommitDate = selectedBranchLogInfo.all[0].date;
+              const firstCommitDate =
+                selectedBranchLogInfo.all[selectedBranchLogInfo.all.length - 1]
+                  .date;
+
+              branchInfo.all
+                .filter((branchName) => branchName !== data.branchName)
+                .forEach((branchName) => {
+                  logCollectorFunctions.push((callback) => {
+                    simpleGit.checkout(branchName, (checkoutError) => {
+                      if (!checkoutError) {
+                        simpleGit.log(
+                          {
+                            "--after": firstCommitDate,
+                            "--before": lastCommitDate,
+                          },
+                          (logError, logInfo) => {
+                            if (!logError) {
+                              branchData.push({
+                                branch: branchName,
+                                logs: logInfo.all,
+                                index: 0,
+                              });
+                              callback();
+                            }
+                          }
+                        );
+                      }
+                    });
+                  });
                 });
-                callback();
-              }
-            });
+              async.waterfall(logCollectorFunctions, () => {
+                asynchronousReply(event, uuid, {
+                  branchName: data.branchName,
+                  logs: branchData,
+                });
+              });
+            }
           }
-        });
-      });
-    });
-    async.waterfall(logCollectorFunctions, () => {
-      asynchronousReply(event, uuid, {
-        branchName: data.branchName,
-        logs: branchData,
-      });
+        );
+      }
     });
   });
 };
