@@ -6,7 +6,7 @@ import Header from "../../components/header/header";
 import Loader from "../../components/loader/loader";
 import Menu from "../../components/menu/menu";
 
-import { setFolder, getBranchInfo } from "../../actions";
+import { setFolder, getBranches, getBranchInfo } from "../../actions";
 
 import "./repository-management.css";
 
@@ -15,16 +15,16 @@ function RepositoryManagement({ currentFolder, dispatch }) {
   let [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (currentFolder.branchInfo) {
+    if (currentFolder.branches) {
       setLoading(false);
     }
-  }, [currentFolder.branchInfo]);
+  }, [currentFolder.branches]);
 
   useEffect(() => {
     if (!currentFolder.path) {
       history.push("/");
     }
-    dispatch(getBranchInfo(currentFolder.path));
+    dispatch(getBranches(currentFolder.path));
   }, []);
 
   const pathParts = currentFolder.path.split("/");
@@ -41,7 +41,16 @@ function RepositoryManagement({ currentFolder, dispatch }) {
         repositoryName={repositoryName}
       />
       <div className="content">
-        <Menu branches={currentFolder.branchInfo.all}/>
+        <Menu
+          branches={Object.keys(currentFolder.branches).map((key) => [
+            key,
+            currentFolder.branches[key].current,
+          ])}
+          optionClick={(branchName) => {dispatch(getBranchInfo(currentFolder.path, branchName))}}
+        />
+        <div>
+
+        </div>
       </div>
     </div>
   );

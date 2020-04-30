@@ -23,6 +23,12 @@
   cursor: pointer;
 }
 
+.menu .menu-item.current {
+  font-weight: 800;
+  text-decoration: underline;
+}
+
+
 .menu .Collapsible__trigger img {
   height: 10px;
   position: absolute;

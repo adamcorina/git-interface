@@ -2,6 +2,7 @@ const electron = require("electron");
 const simpleGit = require("simple-git")();
 const os = require("os");
 const fs = require("fs");
+const async = require("async");
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const dialog = electron.dialog;
@@ -23,8 +24,8 @@ function createWindow() {
   );
 
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1250,
+    height: 1000,
     webPreferences: { nodeIntegration: true },
   });
 
@@ -65,6 +66,9 @@ ipcMain.on("asynchronous-message", (event, arg) => {
       break;
     case "GET_REPOSITORIES":
       getRepositories(event, uuid);
+      break;
+    case "GET_BRANCHES":
+      getBranches(event, uuid, data);
       break;
     case "GET_BRANCH_INFO":
       getBranchInfo(event, uuid, data);
@@ -121,12 +125,46 @@ const initializeDirectorySelection = (event, uuid) => {
     });
 };
 
-const getBranchInfo = (event, uuid, data) => {
+const getBranches = (event, uuid, data) => {
   simpleGit.cwd(data.path).branchLocal((err, branchInfo) => {
     if (err) {
       asynchronousReply(event, uuid, {});
       return;
     }
-    asynchronousReply(event, uuid, branchInfo);
+    asynchronousReply(event, uuid, { branches: branchInfo.branches });
+  });
+};
+
+const getBranchInfo = (event, uuid, data) => {
+  let branchData = [];
+  let logCollectorFunctions = [];
+  simpleGit.cwd(data.path).branchLocal((branchInfoError, branchInfo) => {
+    if (branchInfoError) {
+      return;
+    }
+    branchInfo.all.forEach((branchName) => {
+      logCollectorFunctions.push((callback) => {
+        simpleGit.checkout(branchName, (checkoutError) => {
+          if (!checkoutError) {
+            simpleGit.log({ "-n10": null }, (logError, logInfo) => {
+              if (!logError) {
+                branchData.push({
+                  branch: branchName,
+                  logs: logInfo.all,
+                  index: 0,
+                });
+                callback();
+              }
+            });
+          }
+        });
+      });
+    });
+    async.waterfall(logCollectorFunctions, () => {
+      asynchronousReply(event, uuid, {
+        branchName: data.branchName,
+        logs: branchData,
+      });
+    });
   });
 };

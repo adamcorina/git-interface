@@ -3,7 +3,7 @@ import Collapsible from "react-collapsible";
 
 import "./menu.css";
 
-function Menu({ branches = [] }) {
+function Menu({ branches = [], optionClick }) {
   return (
     <div className="menu">
       <Collapsible
@@ -16,7 +16,7 @@ function Menu({ branches = [] }) {
           </div>
         }
         triggerTagName="div"
-        transitionTime="0.2"
+        transitionTime={0.2}
         triggerWhenOpen={
           <div>
             Branches
@@ -25,7 +25,13 @@ function Menu({ branches = [] }) {
         }
       >
         {branches.map((branch) => (
-          <div className="menu-item">{branch}</div>
+          <div
+            key={branch[0]}
+            className={`menu-item ${branch[1] ? "current" : ""}`}
+            onClick={()=>{optionClick(branch[0])}}
+          >
+            {branch[0]}
+          </div>
         ))}
       </Collapsible>
     </div>
