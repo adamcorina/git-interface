@@ -138,7 +138,7 @@ const getBranches = (event, uuid, data) => {
 
 const getLogsForBranches = (branches, firstCommitDate, lastCommitDate, getLogsForBranchesCallback) => {
   let logCollectorFunctions = [];
-  let branchData = [];
+  let branchesData = [];
 
   branches.forEach((branchName) => {
     logCollectorFunctions.push((callback) => {
@@ -146,7 +146,7 @@ const getLogsForBranches = (branches, firstCommitDate, lastCommitDate, getLogsFo
         if (!checkoutError) {
           simpleGit.log({ "--after": firstCommitDate, "--before": lastCommitDate }, (logError, logInfo) => {
             if (!logError) {
-              branchData.push({ branch: branchName, logs: logInfo.all, index: 0 });
+              branchesData.push({ branch: branchName, logs: logInfo.all, index: 0 });
               callback();
             }
           });
@@ -155,12 +155,44 @@ const getLogsForBranches = (branches, firstCommitDate, lastCommitDate, getLogsFo
     });
   });
   async.waterfall(logCollectorFunctions, () => {
-    getLogsForBranchesCallback(branchData);
+    getLogsForBranchesCallback(branchesData);
   });
 };
 
+const mergeLogs = (branchesData) => {
+  let mergedLogs = {};
+  let done = false;
+
+  while (!done) {
+    done = true;
+    let latestCommit = null;
+    let latestCommitBranchIndex = null;
+    branchesData.forEach((branchData, branchIndex) => {
+      if (
+        branchData.logs[branchData.index] &&
+        (!latestCommit || new Date(latestCommit.date) < new Date(branchData.logs[branchData.index]))
+      ) {
+        latestCommit = branchData.logs[branchData.index];
+        latestCommitBranchIndex = branchIndex;
+      }
+    });
+    if (latestCommitBranchIndex !== null) {
+      done = false;
+      branchesData[latestCommitBranchIndex].index++;
+      if (!mergedLogs[latestCommit.hash]) {
+        mergedLogs[latestCommit.hash] = [];
+      }
+      mergedLogs[latestCommit.hash] = [
+        ...mergedLogs[latestCommit.hash],
+        { ...latestCommit, branch: branchesData[latestCommitBranchIndex].branch },
+      ];
+    }
+  }
+  return mergedLogs;
+};
+
 const getBranchInfo = (event, uuid, data) => {
-  let branchData = [];
+  let branchesData = [];
   let logCollectorFunctions = [];
   simpleGit.cwd(data.path).branchLocal((branchInfoError, branchInfo) => {
     if (branchInfoError) {
@@ -170,16 +202,17 @@ const getBranchInfo = (event, uuid, data) => {
       if (!selectedBranchCheckoutError) {
         simpleGit.log({ "-n10": null }, (selectedBranchLogError, selectedBranchLogInfo) => {
           if (!selectedBranchLogError) {
-            branchData.push({ branch: data.branchName, logs: selectedBranchLogInfo.all, index: 0 });
+            branchesData.push({ branch: data.branchName, logs: selectedBranchLogInfo.all, index: 0 });
 
             const lastCommitDate = selectedBranchLogInfo.all[0].date;
             const firstCommitDate = selectedBranchLogInfo.all[selectedBranchLogInfo.all.length - 1].date;
             const localBranchesWithoutSelected = branchInfo.all.filter((branchName) => branchName !== data.branchName);
 
             getLogsForBranches(localBranchesWithoutSelected, firstCommitDate, lastCommitDate, (results) => {
-              branchData.concat(results);
+              branchesData = branchesData.concat(results);
+              const mergedBranchesData = mergeLogs(branchesData);
               async.waterfall(logCollectorFunctions, () => {
-                asynchronousReply(event, uuid, { branchName: data.branchName, logs: branchData });
+                asynchronousReply(event, uuid, { branchName: data.branchName, logs: mergedBranchesData });
               });
             });
           }
