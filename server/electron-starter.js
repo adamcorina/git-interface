@@ -29,6 +29,8 @@ function createWindow() {
     webPreferences: { nodeIntegration: true },
   });
 
+  mainWindow.setMinimumSize(1000, 700);
+
   const startUrl =
     process.env.ELECTRON_START_URL ||
     url.format({

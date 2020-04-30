@@ -1,13 +1,43 @@
 .commit-history {
-  height: 100%;
+  width: 100%;
   overflow: scroll;
 }
 
-.commit-history tbody td{
-    padding-left: 10px;
-    padding-right: 10px;
+.commit-history tbody td, .commit-history thead th {
+  padding-left: 1%;
+  padding-right: 1%;
+  min-width: 0;
+  display: inline-block;
 }
 
-.commit-history thead th{
-    padding: 30px 0 10px 0;
+.commit-history thead th {
+    padding: 30px 1% 10px 1%;
+  }
+
+.commit-history tbody td:nth-of-type(1),
+.commit-history thead th:nth-of-type(1) {
+  width: 10%;
+}
+
+.commit-history tbody td:nth-of-type(2),
+.commit-history thead th:nth-of-type(2) {
+  width: 42%;
+}
+
+.commit-history tbody td:nth-of-type(3),
+.commit-history thead th:nth-of-type(3) {
+  width: 20%;
+}
+
+.commit-history tbody td:nth-of-type(4),
+.commit-history thead th:nth-of-type(4) {
+  width: 20%;
+}
+
+.commit-history tbody td div {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  width: 100%;
 }

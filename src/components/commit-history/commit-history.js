@@ -1,5 +1,5 @@
 import React from "react";
-
+import moment from "moment";
 import "./commit-history.css";
 
 function CommitHistory({ logs }) {
@@ -17,10 +17,18 @@ function CommitHistory({ logs }) {
         {Object.entries(logs).map((log) => {
           return (
             <tr key={log[0]}>
-              <td>{log[0].substr(0,7)}</td>
-              <td>{log[1][0]["message"]}</td>
-              <td>{log[1][0]["author_name"]}</td>
-              <td>{log[1][0]["date"]}</td>
+              <td>
+                <div>{log[0].substr(0, 7)}</div>
+              </td>
+              <td>
+                <div>{log[1][0]["message"]}</div>
+              </td>
+              <td>
+                <div>{log[1][0]["author_name"]}</div>
+              </td>
+              <td>
+                <div>{moment(log[1][0]["date"]).format('MM/DD/YYYY, h:mm:ss')}</div>
+              </td>
             </tr>
           );
         })}

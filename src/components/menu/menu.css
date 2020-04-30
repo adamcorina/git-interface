@@ -1,9 +1,9 @@
 .menu {
   width: 30vw;
-  max-width: 300px;
   padding: 20px 0;
-  height: 100%;
+  min-height: 100%;
   border-right: 1px solid #3a404b;
+  overflow: scroll;
 }
 
 .menu .Collapsible__trigger {

@@ -9,13 +9,15 @@
 }
 
 .repository-management .container {
-  height: calc(100vh - 50px);
+  height: calc(100% - 50px);
   width: 100vw;
   display: flex;
 }
 
 .repository-management .container .menu {
   flex: 1 1 30%;
+  max-width: 300px;
+  min-width: 200px;
 }
 
 .repository-management .container .content {
