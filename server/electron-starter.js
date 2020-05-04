@@ -141,14 +141,16 @@ const getBranches = (event, uuid, data) => {
 const getLogsForBranches = (branches, firstCommitDate, lastCommitDate, getLogsForBranchesCallback) => {
   let logCollectorFunctions = [];
   let branchesData = [];
+  let activeBranches = [];
 
   branches.forEach((branchName) => {
     logCollectorFunctions.push((callback) => {
       simpleGit.checkout(branchName, (checkoutError) => {
         if (!checkoutError) {
           simpleGit.log({ "--after": firstCommitDate, "--before": lastCommitDate }, (logError, logInfo) => {
-            if (!logError) {
+            if (!logError && logInfo.all.length) {
               branchesData.push({ branch: branchName, logs: logInfo.all, index: 0 });
+              activeBranches.push(branchName);
               callback();
             }
           });
@@ -157,7 +159,7 @@ const getLogsForBranches = (branches, firstCommitDate, lastCommitDate, getLogsFo
     });
   });
   async.waterfall(logCollectorFunctions, () => {
-    getLogsForBranchesCallback(branchesData);
+    getLogsForBranchesCallback({ logs: branchesData, activeBranches });
   });
 };
 
@@ -172,7 +174,7 @@ const mergeLogs = (branchesData) => {
     branchesData.forEach((branchData, branchIndex) => {
       if (
         branchData.logs[branchData.index] &&
-        (!latestCommit || new Date(latestCommit.date) < new Date(branchData.logs[branchData.index]))
+        (!latestCommit || new Date(latestCommit.date) < new Date(branchData.logs[branchData.index].date))
       ) {
         latestCommit = branchData.logs[branchData.index];
         latestCommitBranchIndex = branchIndex;
@@ -211,10 +213,14 @@ const getBranchInfo = (event, uuid, data) => {
             const localBranchesWithoutSelected = branchInfo.all.filter((branchName) => branchName !== data.branchName);
 
             getLogsForBranches(localBranchesWithoutSelected, firstCommitDate, lastCommitDate, (results) => {
-              branchesData = branchesData.concat(results);
+              branchesData = branchesData.concat(results.logs);
               const mergedBranchesData = mergeLogs(branchesData);
               async.waterfall(logCollectorFunctions, () => {
-                asynchronousReply(event, uuid, { branchName: data.branchName, logs: mergedBranchesData });
+                asynchronousReply(event, uuid, {
+                  branchName: data.branchName,
+                  logs: mergedBranchesData,
+                  branches: [data.branchName, ...results.activeBranches],
+                });
               });
             });
           }
