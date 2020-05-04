@@ -141,16 +141,15 @@ const getBranches = (event, uuid, data) => {
 const getLogsForBranches = (branches, firstCommitDate, lastCommitDate, getLogsForBranchesCallback) => {
   let logCollectorFunctions = [];
   let branchesData = [];
-  let activeBranches = [];
 
   branches.forEach((branchName) => {
     logCollectorFunctions.push((callback) => {
       simpleGit.checkout(branchName, (checkoutError) => {
         if (!checkoutError) {
-          simpleGit.log({ "--after": firstCommitDate, "--before": lastCommitDate }, (logError, logInfo) => {
+          // , "--before": lastCommitDate
+          simpleGit.log({ "--after": firstCommitDate }, (logError, logInfo) => {
             if (!logError && logInfo.all.length) {
               branchesData.push({ branch: branchName, logs: logInfo.all, index: 0 });
-              activeBranches.push(branchName);
               callback();
             }
           });
@@ -159,22 +158,29 @@ const getLogsForBranches = (branches, firstCommitDate, lastCommitDate, getLogsFo
     });
   });
   async.waterfall(logCollectorFunctions, () => {
-    getLogsForBranchesCallback({ logs: branchesData, activeBranches });
+    getLogsForBranchesCallback(branchesData);
   });
 };
 
 const mergeLogs = (branchesData) => {
   let mergedLogs = {};
   let done = false;
+  let activeBranches = new Set();
 
   while (!done) {
     done = true;
     let latestCommit = null;
     let latestCommitBranchIndex = null;
+
+    const activeBranchesAsList = Array.from(activeBranches);
     branchesData.forEach((branchData, branchIndex) => {
       if (
         branchData.logs[branchData.index] &&
-        (!latestCommit || new Date(latestCommit.date) < new Date(branchData.logs[branchData.index].date))
+        (!latestCommit ||
+          new Date(latestCommit.date) < new Date(branchData.logs[branchData.index].date) ||
+          (new Date(latestCommit.date) === new Date(branchData.logs[branchData.index].date) &&
+            activeBranchesAsList.indexOf(branchData.logs[branchData.index].branch) >
+              activeBranchesAsList.indexOf(branchesData[latestCommitBranchIndex].branch)))
       ) {
         latestCommit = branchData.logs[branchData.index];
         latestCommitBranchIndex = branchIndex;
@@ -182,6 +188,7 @@ const mergeLogs = (branchesData) => {
     });
     if (latestCommitBranchIndex !== null) {
       done = false;
+      activeBranches.add(branchesData[latestCommitBranchIndex].branch);
       branchesData[latestCommitBranchIndex].index++;
       if (!mergedLogs[latestCommit.hash]) {
         mergedLogs[latestCommit.hash] = [];
@@ -192,7 +199,7 @@ const mergeLogs = (branchesData) => {
       ];
     }
   }
-  return mergedLogs;
+  return { mergedLogs, activeBranches };
 };
 
 const getBranchInfo = (event, uuid, data) => {
@@ -213,13 +220,14 @@ const getBranchInfo = (event, uuid, data) => {
             const localBranchesWithoutSelected = branchInfo.all.filter((branchName) => branchName !== data.branchName);
 
             getLogsForBranches(localBranchesWithoutSelected, firstCommitDate, lastCommitDate, (results) => {
-              branchesData = branchesData.concat(results.logs);
+              branchesData = branchesData.concat(results);
               const mergedBranchesData = mergeLogs(branchesData);
               async.waterfall(logCollectorFunctions, () => {
                 asynchronousReply(event, uuid, {
                   branchName: data.branchName,
-                  logs: mergedBranchesData,
-                  branches: [data.branchName, ...results.activeBranches],
+                  logs: mergedBranchesData.mergedLogs,
+                  branches: [data.branchName, []],
+                  activeBranches: Array.from(mergedBranchesData.activeBranches),
                 });
               });
             });

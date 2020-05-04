@@ -16,7 +16,7 @@ const currentFolder = (state = { path: "", isRepo: true, branches: null, current
         ...state,
         current: action.branchName,
         logs: action.logs,
-        activeBranches: action.branches
+        activeBranches: action.activeBranches
       };
     default:
       return state;

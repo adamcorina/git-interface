@@ -24,29 +24,23 @@ class CommitHistory extends Component {
         <tr key={log[0]}>
           <td className="branches">
             {this.props.activeBranches.map((branch, index) => {
-              let nextIsCommonCommit = false;
+              let isCommonCommit = false;
+              let parentBranchOfCommit = null;
               if (branch === log[1][0]["branch"]) {
                 this.branchActivity[index] = true;
               }
-              if (this.branchActivity[index] === true && logEntries[logIndex + 1] && branch !== this.props.currentBranch) {
-                logEntries[logIndex + 1][1].forEach((commit) => {
-                  if (logEntries[logIndex + 1][1].length > 1 && commit.branch === branch) {
-                    nextIsCommonCommit = true;
+              if (this.branchActivity[index] === true && logEntries[logIndex][1].length > 1) {
+                logEntries[logIndex][1].slice(1).forEach((commit) => {
+                  if (commit.branch === branch) {
+                    isCommonCommit = true;
+                    parentBranchOfCommit = logEntries[logIndex][1][0]["branch"];
                     this.branchActivity[index] = false;
                   }
                 });
               }
               return (
                 <div className="branch">
-                  {nextIsCommonCommit
-                    ? branch === log[1][0]["branch"]
-                      ? "*J"
-                      : "J"
-                    : branch === log[1][0]["branch"]
-                    ? "*"
-                    : this.branchActivity[index]
-                    ? "|"
-                    : ""}
+                  {branch === log[1][0]["branch"] ? "*" : isCommonCommit ? "J" : this.branchActivity[index] ? "|" : ""}
                 </div>
               );
             })}
