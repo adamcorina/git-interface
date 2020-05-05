@@ -147,12 +147,27 @@ const getLogsForBranches = (branches, firstCommitDate, lastCommitDate, getLogsFo
       simpleGit.checkout(branchName, (checkoutError) => {
         if (!checkoutError) {
           // , "--before": lastCommitDate
-          simpleGit.log({ "--after": firstCommitDate, "--first-parent": null }, (logError, logInfo) => {
-            if (!logError && logInfo.all.length) {
-              branchesData.push({ branch: branchName, logs: logInfo.all, index: 0 });
-              callback();
+          simpleGit.log(
+            {
+              "--after": firstCommitDate,
+              "--first-parent": null,
+              format: {
+                hash: "%H %P",
+                date: "%ai",
+                message: "%s",
+                refs: "%D",
+                body: "%b",
+                author_name: "%aN",
+                author_email: "%ae",
+              },
+            },
+            (logError, logInfo) => {
+              if (!logError && logInfo.all.length) {
+                branchesData.push({ branch: branchName, logs: logInfo.all, index: 0 });
+                callback();
+              }
             }
-          });
+          );
         }
       });
     });
@@ -195,11 +210,11 @@ const mergeLogs = (branchesData) => {
         activeBranches.push(branchesData[latestCommitBranchIndex].branch);
       }
       branchesData[latestCommitBranchIndex].index++;
-      if (!mergedLogs[latestCommit.hash]) {
-        mergedLogs[latestCommit.hash] = [];
+      if (!mergedLogs[latestCommit.hash.split(" ")[0]]) {
+        mergedLogs[latestCommit.hash.split(" ")[0]] = [];
       }
-      mergedLogs[latestCommit.hash] = [
-        ...mergedLogs[latestCommit.hash],
+      mergedLogs[latestCommit.hash.split(" ")[0]] = [
+        ...mergedLogs[latestCommit.hash.split(" ")[0]],
         { ...latestCommit, branch: branchesData[latestCommitBranchIndex].branch },
       ];
     }
@@ -215,26 +230,43 @@ const getBranchInfo = (event, uuid, data) => {
     }
     simpleGit.checkout(data.branchName, (selectedBranchCheckoutError) => {
       if (!selectedBranchCheckoutError) {
-        simpleGit.log({ "-n40": null, "--first-parent": null }, (selectedBranchLogError, selectedBranchLogInfo) => {
-          if (!selectedBranchLogError) {
-            branchesData.push({ branch: data.branchName, logs: selectedBranchLogInfo.all, index: 0 });
+        simpleGit.log(
+          {
+            "-n40": null,
+            "--first-parent": null,
+            format: {
+              hash: "%H %P",
+              date: "%ai",
+              message: "%s",
+              refs: "%D",
+              body: "%b",
+              author_name: "%aN",
+              author_email: "%ae",
+            },
+          },
+          (selectedBranchLogError, selectedBranchLogInfo) => {
+            if (!selectedBranchLogError) {
+              branchesData.push({ branch: data.branchName, logs: selectedBranchLogInfo.all, index: 0 });
 
-            const lastCommitDate = selectedBranchLogInfo.all[0].date;
-            const firstCommitDate = selectedBranchLogInfo.all[selectedBranchLogInfo.all.length - 1].date;
-            const localBranchesWithoutSelected = branchInfo.all.filter((branchName) => branchName !== data.branchName);
+              const lastCommitDate = selectedBranchLogInfo.all[0].date;
+              const firstCommitDate = selectedBranchLogInfo.all[selectedBranchLogInfo.all.length - 1].date;
+              const localBranchesWithoutSelected = branchInfo.all.filter(
+                (branchName) => branchName !== data.branchName
+              );
 
-            getLogsForBranches(localBranchesWithoutSelected, firstCommitDate, lastCommitDate, (results) => {
-              branchesData = branchesData.concat(results);
-              const mergedBranchesData = mergeLogs(branchesData);
-              asynchronousReply(event, uuid, {
-                branchName: data.branchName,
-                logs: mergedBranchesData.mergedLogs,
-                branches: [data.branchName, []],
-                activeBranches: mergedBranchesData.activeBranches,
+              getLogsForBranches(localBranchesWithoutSelected, firstCommitDate, lastCommitDate, (results) => {
+                branchesData = branchesData.concat(results);
+                const mergedBranchesData = mergeLogs(branchesData);
+                asynchronousReply(event, uuid, {
+                  branchName: data.branchName,
+                  logs: mergedBranchesData.mergedLogs,
+                  branches: [data.branchName, []],
+                  activeBranches: mergedBranchesData.activeBranches,
+                });
               });
-            });
+            }
           }
-        });
+        );
       }
     });
   });
