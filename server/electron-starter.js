@@ -172,15 +172,10 @@ const mergeLogs = (branchesData) => {
     let latestCommit = null;
     let latestCommitBranchIndex = null;
 
-    const activeBranchesAsList = Array.from(activeBranches);
     branchesData.forEach((branchData, branchIndex) => {
       if (
         branchData.logs[branchData.index] &&
-        (!latestCommit ||
-          new Date(latestCommit.date) < new Date(branchData.logs[branchData.index].date) ||
-          (new Date(latestCommit.date) === new Date(branchData.logs[branchData.index].date) &&
-            activeBranchesAsList.indexOf(branchData.logs[branchData.index].branch) >
-              activeBranchesAsList.indexOf(branchesData[latestCommitBranchIndex].branch)))
+        (!latestCommit || new Date(latestCommit.date) < new Date(branchData.logs[branchData.index].date))
       ) {
         latestCommit = branchData.logs[branchData.index];
         latestCommitBranchIndex = branchIndex;
@@ -200,6 +195,23 @@ const mergeLogs = (branchesData) => {
     }
   }
   return { mergedLogs, activeBranches };
+};
+
+const arrangeWhenCommonLogs = (mergedBranchesData) => {
+  const { mergedLogs, activeBranches } = mergedBranchesData;
+  const orderedMergedLogs = [];
+  const activeBranchesAsArray = Array.from(activeBranches);
+
+  Object.entries(mergedLogs).forEach((log) => {
+    if (log[1].length === 1) {
+      orderedMergedLogs[log[0]] = log[1];
+    } else {
+      orderedMergedLogs[log[0]] = log[1].sort((l1, l2) => {
+        return activeBranchesAsArray.indexOf(l1.branch) - activeBranchesAsArray.indexOf(l2.branch);
+      });
+    }
+  });
+  return orderedMergedLogs;
 };
 
 const getBranchInfo = (event, uuid, data) => {
@@ -225,7 +237,7 @@ const getBranchInfo = (event, uuid, data) => {
               async.waterfall(logCollectorFunctions, () => {
                 asynchronousReply(event, uuid, {
                   branchName: data.branchName,
-                  logs: mergedBranchesData.mergedLogs,
+                  logs: arrangeWhenCommonLogs(mergedBranchesData),
                   branches: [data.branchName, []],
                   activeBranches: Array.from(mergedBranchesData.activeBranches),
                 });
