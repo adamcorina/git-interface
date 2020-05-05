@@ -147,7 +147,7 @@ const getLogsForBranches = (branches, firstCommitDate, lastCommitDate, getLogsFo
       simpleGit.checkout(branchName, (checkoutError) => {
         if (!checkoutError) {
           // , "--before": lastCommitDate
-          simpleGit.log({ "--after": firstCommitDate }, (logError, logInfo) => {
+          simpleGit.log({ "--after": firstCommitDate, "--first-parent": null }, (logError, logInfo) => {
             if (!logError && logInfo.all.length) {
               branchesData.push({ branch: branchName, logs: logInfo.all, index: 0 });
               callback();
@@ -180,8 +180,7 @@ const mergeLogs = (branchesData) => {
           (new Date(latestCommit.date).getTime() === new Date(branchData.logs[branchData.index].date).getTime() &&
             activeBranches.indexOf(branchData.branch) !== -1 &&
             activeBranches.indexOf(latestCommit.branch) !== -1 &&
-            activeBranches.indexOf(branchData.branch) <
-              activeBranches.indexOf(latestCommit.branch)) ||
+            activeBranches.indexOf(branchData.branch) < activeBranches.indexOf(latestCommit.branch)) ||
           (new Date(latestCommit.date).getTime() === new Date(branchData.logs[branchData.index].date).getTime() &&
             activeBranches.indexOf(branchData.branch) !== -1 &&
             activeBranches.indexOf(latestCommit.branch) === -1))
@@ -216,7 +215,7 @@ const getBranchInfo = (event, uuid, data) => {
     }
     simpleGit.checkout(data.branchName, (selectedBranchCheckoutError) => {
       if (!selectedBranchCheckoutError) {
-        simpleGit.log({ "-n40": null }, (selectedBranchLogError, selectedBranchLogInfo) => {
+        simpleGit.log({ "-n40": null, "--first-parent": null }, (selectedBranchLogError, selectedBranchLogInfo) => {
           if (!selectedBranchLogError) {
             branchesData.push({ branch: data.branchName, logs: selectedBranchLogInfo.all, index: 0 });
 
