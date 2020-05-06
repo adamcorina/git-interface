@@ -146,28 +146,28 @@ const getLogsForBranches = (branches, firstCommitDate, lastCommitDate, getLogsFo
     logCollectorFunctions.push((callback) => {
       simpleGit.checkout(branchName, (checkoutError) => {
         if (!checkoutError) {
-          // , "--before": lastCommitDate
-          simpleGit.log(
-            {
-              "--after": firstCommitDate,
-              "--first-parent": null,
-              format: {
-                hash: "%H %P",
-                date: "%ai",
-                message: "%s",
-                refs: "%D",
-                body: "%b",
-                author_name: "%aN",
-                author_email: "%ae",
-              },
+          const options = {
+            "--after": firstCommitDate,
+            "--first-parent": null,
+            format: {
+              hash: "%H %P",
+              date: "%ai",
+              message: "%s",
+              refs: "%D",
+              body: "%b",
+              author_name: "%aN",
+              author_email: "%ae",
             },
-            (logError, logInfo) => {
-              if (!logError && logInfo.all.length) {
-                branchesData.push({ branch: branchName, logs: logInfo.all, index: 0 });
-                callback();
-              }
+          };
+          if (lastCommitDate) {
+            options["--before"] = lastCommitDate;
+          }
+          simpleGit.log(options, (logError, logInfo) => {
+            if (!logError && logInfo.all.length) {
+              branchesData.push({ branch: branchName, logs: logInfo.all, index: 0 });
+              callback();
             }
-          );
+          });
         }
       });
     });
@@ -230,31 +230,38 @@ const getBranchInfo = (event, uuid, data) => {
     }
     simpleGit.checkout(data.branchName, (selectedBranchCheckoutError) => {
       if (!selectedBranchCheckoutError) {
-        simpleGit.log(
-          {
-            "-n40": null,
-            "--first-parent": null,
-            format: {
-              hash: "%H %P",
-              date: "%ai",
-              message: "%s",
-              refs: "%D",
-              body: "%b",
-              author_name: "%aN",
-              author_email: "%ae",
-            },
+        const options = {
+          "-n40": null,
+          "--first-parent": null,
+          format: {
+            hash: "%H %P",
+            date: "%ai",
+            message: "%s",
+            refs: "%D",
+            body: "%b",
+            author_name: "%aN",
+            author_email: "%ae",
           },
-          (selectedBranchLogError, selectedBranchLogInfo) => {
-            if (!selectedBranchLogError) {
-              branchesData.push({ branch: data.branchName, logs: selectedBranchLogInfo.all, index: 0 });
+        };
+        if (data.startFrom) {
+          options[data.startFrom] = null;
+        }
+        simpleGit.log(options, (selectedBranchLogError, selectedBranchLogInfo) => {
+          if (!selectedBranchLogError) {
+            const selectedBranchNewLogInfo = data.startFrom
+              ? selectedBranchLogInfo.all.slice(1)
+              : selectedBranchLogInfo.all;
+            branchesData.push({ branch: data.branchName, logs: selectedBranchNewLogInfo, index: 0 });
 
-              const lastCommitDate = selectedBranchLogInfo.all[0].date;
-              const firstCommitDate = selectedBranchLogInfo.all[selectedBranchLogInfo.all.length - 1].date;
-              const localBranchesWithoutSelected = branchInfo.all.filter(
-                (branchName) => branchName !== data.branchName
-              );
+            const lastCommitDate = selectedBranchNewLogInfo[0].date;
+            const firstCommitDate = selectedBranchNewLogInfo[selectedBranchNewLogInfo.length - 1].date;
+            const localBranchesWithoutSelected = branchInfo.all.filter((branchName) => branchName !== data.branchName);
 
-              getLogsForBranches(localBranchesWithoutSelected, firstCommitDate, lastCommitDate, (results) => {
+            getLogsForBranches(
+              localBranchesWithoutSelected,
+              firstCommitDate,
+              data.startFrom ? lastCommitDate : null,
+              (results) => {
                 branchesData = branchesData.concat(results);
                 const mergedBranchesData = mergeLogs(branchesData);
                 asynchronousReply(event, uuid, {
@@ -263,10 +270,10 @@ const getBranchInfo = (event, uuid, data) => {
                   branches: [data.branchName, []],
                   activeBranches: mergedBranchesData.activeBranches,
                 });
-              });
-            }
+              }
+            );
           }
-        );
+        });
       }
     });
   });

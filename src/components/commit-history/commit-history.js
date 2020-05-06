@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import moment from "moment";
+import debounce from "lodash.debounce";
 
 import CommitRow from "./commit-row/commit-row";
 
@@ -9,6 +9,16 @@ class CommitHistory extends Component {
   constructor(props) {
     super(props);
     this.branchActivity = Array(props.branches.length).fill(false);
+    this.registerToScrollEvent()
+  }
+
+  registerToScrollEvent() {
+    window.onscroll = debounce(() => {
+      if (window.innerHeight + document.documentElement.scrollTop === document.documentElement.offsetHeight) {
+        const logEntries = Object.entries(this.props.logs);
+        console.log(logEntries[logEntries.length - 1][1][0].hash.split(" ")[0])
+      }
+    }, 100);
   }
 
   componentDidUpdate(prevProps) {
