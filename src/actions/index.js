@@ -57,9 +57,9 @@ export const getBranches = (path) => {
   };
 };
 
-export const getBranchInfo = (path, branchName, startFrom = null) => {
+export const getBranchInfo = (path, branchName, startFrom = null, activeBranches = []) => {
   return function (dispatch) {
-    return callService("GET_BRANCH_INFO", { path, branchName, startFrom }).then((branchInfo) => {
+    return callService("GET_BRANCH_INFO", { path, branchName, startFrom, activeBranches }).then((branchInfo) => {
       if (!startFrom) {
         dispatch(setBranchInfo(branchInfo));
       } else {

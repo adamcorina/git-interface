@@ -21,7 +21,7 @@ class CommitHistory extends Component {
         const logEntries = Object.entries(this.props.logs);
         const hashLastEntry = logEntries[logEntries.length - 1][1][0].hash.split(" ")[0];
         this.props.dispatch(
-          getBranchInfo(this.props.currentFolder.path, this.props.currentFolder.current, hashLastEntry)
+          getBranchInfo(this.props.currentFolder.path, this.props.currentFolder.current, hashLastEntry, this.props.currentFolder.activeBranches)
         );
       }
     }, 100);

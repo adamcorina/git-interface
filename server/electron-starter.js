@@ -179,10 +179,10 @@ const getLogsForBranches = (branches, firstCommitDate, lastCommitDate, getLogsFo
   });
 };
 
-const mergeLogs = (branchesData) => {
+const mergeLogs = (branchesData, currentActiveBranches) => {
   let mergedLogs = {};
   let done = false;
-  let activeBranches = [];
+  let activeBranches = [...currentActiveBranches];
 
   while (!done) {
     done = true;
@@ -265,7 +265,7 @@ const getBranchInfo = (event, uuid, data) => {
               data.startFrom ? lastCommitDate : null,
               (results) => {
                 branchesData = branchesData.concat(results);
-                const mergedBranchesData = mergeLogs(branchesData);
+                const mergedBranchesData = mergeLogs(branchesData, data.activeBranches);
                 asynchronousReply(event, uuid, {
                   branchName: data.branchName,
                   logs: mergedBranchesData.mergedLogs,
