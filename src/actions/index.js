@@ -25,6 +25,11 @@ export const setBranchInfo = (branchInfo) => ({
   ...branchInfo,
 });
 
+export const appendLogs = (branchInfo) => ({
+  type: "APPEND_LOGS",
+  ...branchInfo,
+});
+
 export const initializeFolderSelection = () => {
   return function (dispatch) {
     return callService("INITIALIZE_DIRECTORY_SELECTION").then((folderInfo) => {
@@ -52,12 +57,14 @@ export const getBranches = (path) => {
   };
 };
 
-export const getBranchInfo = (path, branchName) => {
+export const getBranchInfo = (path, branchName, startFrom = null) => {
   return function (dispatch) {
-    return callService("GET_BRANCH_INFO", { path, branchName }).then(
-      (branchInfo) => {
+    return callService("GET_BRANCH_INFO", { path, branchName, startFrom }).then((branchInfo) => {
+      if (!startFrom) {
         dispatch(setBranchInfo(branchInfo));
+      } else {
+        dispatch(appendLogs(branchInfo));
       }
-    );
+    });
   };
 };

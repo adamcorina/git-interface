@@ -1,7 +1,10 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
 import debounce from "lodash.debounce";
 
 import CommitRow from "./commit-row/commit-row";
+
+import { getBranchInfo } from "../../actions";
 
 import "./commit-history.css";
 
@@ -9,14 +12,17 @@ class CommitHistory extends Component {
   constructor(props) {
     super(props);
     this.branchActivity = Array(props.branches.length).fill(false);
-    this.registerToScrollEvent()
+    this.registerToScrollEvent();
   }
 
   registerToScrollEvent() {
     window.onscroll = debounce(() => {
       if (window.innerHeight + document.documentElement.scrollTop === document.documentElement.offsetHeight) {
         const logEntries = Object.entries(this.props.logs);
-        console.log(logEntries[logEntries.length - 1][1][0].hash.split(" ")[0])
+        const hashLastEntry = logEntries[logEntries.length - 1][1][0].hash.split(" ")[0];
+        this.props.dispatch(
+          getBranchInfo(this.props.currentFolder.path, this.props.currentFolder.current, hashLastEntry)
+        );
       }
     }, 100);
   }
@@ -63,4 +69,9 @@ class CommitHistory extends Component {
   }
 }
 
-export default CommitHistory;
+function mapStateToProps(state) {
+  const { currentFolder } = state;
+  return { currentFolder };
+}
+
+export default connect(mapStateToProps)(CommitHistory);

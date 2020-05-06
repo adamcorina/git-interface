@@ -147,7 +147,6 @@ const getLogsForBranches = (branches, firstCommitDate, lastCommitDate, getLogsFo
       simpleGit.checkout(branchName, (checkoutError) => {
         if (!checkoutError) {
           const options = {
-            "--after": firstCommitDate,
             "--first-parent": null,
             format: {
               hash: "%H %P",
@@ -161,6 +160,9 @@ const getLogsForBranches = (branches, firstCommitDate, lastCommitDate, getLogsFo
           };
           if (lastCommitDate) {
             options["--before"] = lastCommitDate;
+          }
+          if (firstCommitDate) {
+            options["--after"] = firstCommitDate;
           }
           simpleGit.log(options, (logError, logInfo) => {
             if (!logError && logInfo.all.length) {
@@ -253,8 +255,8 @@ const getBranchInfo = (event, uuid, data) => {
               : selectedBranchLogInfo.all;
             branchesData.push({ branch: data.branchName, logs: selectedBranchNewLogInfo, index: 0 });
 
-            const lastCommitDate = selectedBranchNewLogInfo[0].date;
-            const firstCommitDate = selectedBranchNewLogInfo[selectedBranchNewLogInfo.length - 1].date;
+            const lastCommitDate = selectedBranchNewLogInfo.length ? selectedBranchNewLogInfo[0].date : null;
+            const firstCommitDate = selectedBranchNewLogInfo.length ? selectedBranchNewLogInfo[selectedBranchNewLogInfo.length - 1].date : null;
             const localBranchesWithoutSelected = branchInfo.all.filter((branchName) => branchName !== data.branchName);
 
             getLogsForBranches(
