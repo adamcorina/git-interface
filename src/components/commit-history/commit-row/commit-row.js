@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import moment from "moment";
-import "./commit-row.css";
 
 class CommitRow extends Component {
   render() {
