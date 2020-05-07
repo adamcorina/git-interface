@@ -33,7 +33,6 @@ const currentFolder = (
           }
         });
       });
-      console.log(action.commits);
 
       return {
         ...state,
@@ -62,6 +61,7 @@ const currentFolder = (
           }
         });
       });
+      
       return {
         ...state,
         commits: { ...state.commits, ...action.commits },

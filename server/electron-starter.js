@@ -251,7 +251,7 @@ const getBranchInfo = (event, uuid, data) => {
           options[data.startFrom] = null;
         }
         simpleGit.log(options, (selectedBranchLogError, selectedBranchLogInfo) => {
-          if (!selectedBranchLogError) {
+          if (!selectedBranchLogError && selectedBranchLogInfo.all.length > 1) {
             const selectedBranchNewLogInfo = data.startFrom
               ? selectedBranchLogInfo.all.slice(1)
               : selectedBranchLogInfo.all;
@@ -262,7 +262,6 @@ const getBranchInfo = (event, uuid, data) => {
               ? selectedBranchNewLogInfo[selectedBranchNewLogInfo.length - 1].date
               : null;
             const localBranchesWithoutSelected = branchInfo.all.filter((branchName) => branchName !== data.branchName);
-
             getLogsForBranches(
               localBranchesWithoutSelected,
               firstCommitDate,
@@ -273,11 +272,16 @@ const getBranchInfo = (event, uuid, data) => {
                 asynchronousReply(event, uuid, {
                   branchName: data.branchName,
                   commits: mergedBranchesData.mergedLogs,
-                  branches: [data.branchName, []],
                   activeBranches: mergedBranchesData.activeBranches,
                 });
               }
             );
+          } else {
+            asynchronousReply(event, uuid, {
+              branchName: data.branchName,
+              commits: {},
+              activeBranches: data.activeBranches,
+            });
           }
         });
       }
