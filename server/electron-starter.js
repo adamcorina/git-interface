@@ -213,12 +213,14 @@ const mergeLogs = (branchesData, currentActiveBranches) => {
       }
       branchesData[latestCommitBranchIndex].index++;
       if (!mergedLogs[latestCommit.hash.split(" ")[0]]) {
-        mergedLogs[latestCommit.hash.split(" ")[0]] = [];
+        mergedLogs[latestCommit.hash.split(" ")[0]] = {logs: []};
       }
-      mergedLogs[latestCommit.hash.split(" ")[0]] = [
-        ...mergedLogs[latestCommit.hash.split(" ")[0]],
-        { ...latestCommit, branch: branchesData[latestCommitBranchIndex].branch },
-      ];
+      mergedLogs[latestCommit.hash.split(" ")[0]] = {
+        logs: [
+          ...mergedLogs[latestCommit.hash.split(" ")[0]].logs,
+          { ...latestCommit, branch: branchesData[latestCommitBranchIndex].branch },
+        ],
+      };
     }
   }
   return { mergedLogs, activeBranches };
@@ -256,7 +258,9 @@ const getBranchInfo = (event, uuid, data) => {
             branchesData.push({ branch: data.branchName, logs: selectedBranchNewLogInfo, index: 0 });
 
             const lastCommitDate = selectedBranchNewLogInfo.length ? selectedBranchNewLogInfo[0].date : null;
-            const firstCommitDate = selectedBranchNewLogInfo.length ? selectedBranchNewLogInfo[selectedBranchNewLogInfo.length - 1].date : null;
+            const firstCommitDate = selectedBranchNewLogInfo.length
+              ? selectedBranchNewLogInfo[selectedBranchNewLogInfo.length - 1].date
+              : null;
             const localBranchesWithoutSelected = branchInfo.all.filter((branchName) => branchName !== data.branchName);
 
             getLogsForBranches(
@@ -268,7 +272,7 @@ const getBranchInfo = (event, uuid, data) => {
                 const mergedBranchesData = mergeLogs(branchesData, data.activeBranches);
                 asynchronousReply(event, uuid, {
                   branchName: data.branchName,
-                  logs: mergedBranchesData.mergedLogs,
+                  commits: mergedBranchesData.mergedLogs,
                   branches: [data.branchName, []],
                   activeBranches: mergedBranchesData.activeBranches,
                 });

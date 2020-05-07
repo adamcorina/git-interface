@@ -1,5 +1,5 @@
 const currentFolder = (
-  state = { path: "", isRepo: true, branches: null, current: null, logs: null, activeBranches: null },
+  state = { path: "", isRepo: true, branches: null, current: null, commits: null, activeBranches: null },
   action
 ) => {
   switch (action.type) {
@@ -9,7 +9,7 @@ const currentFolder = (
         isRepo: action.isRepo,
         branches: null,
         current: null,
-        logs: null,
+        commits: null,
         activeBranches: null,
       };
     case "SET_BRANCHES":
@@ -18,14 +18,13 @@ const currentFolder = (
       return {
         ...state,
         current: action.branchName,
-        logs: action.logs,
+        commits: action.commits,
         activeBranches: action.activeBranches,
       };
-    case "APPEND_LOGS":
-      console.log(state.logs);
+    case "APPEND_COMMITS":
       return {
         ...state,
-        logs: { ...state.logs, ...action.logs },
+        commits: { ...state.commits, ...action.commits },
       };
     default:
       return state;

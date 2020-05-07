@@ -18,8 +18,8 @@ class CommitHistory extends Component {
   registerToScrollEvent() {
     window.onscroll = debounce(() => {
       if (window.innerHeight + document.documentElement.scrollTop === document.documentElement.offsetHeight) {
-        const logEntries = Object.entries(this.props.logs);
-        const hashLastEntry = logEntries[logEntries.length - 1][1][0].hash.split(" ")[0];
+        const commitEntries = Object.entries(this.props.commits);
+        const hashLastEntry = commitEntries[commitEntries.length - 1][1][0].hash.split(" ")[0];
         this.props.dispatch(
           getBranchInfo(this.props.currentFolder.path, this.props.currentFolder.current, hashLastEntry, this.props.currentFolder.activeBranches)
         );
@@ -34,11 +34,11 @@ class CommitHistory extends Component {
   }
 
   renderRows() {
-    const logEntries = Object.entries(this.props.logs);
-    return logEntries.map((log) => {
+    const commitEntries = Object.entries(this.props.commits);
+    return commitEntries.map((commit) => {
       return (
         <CommitRow
-          log={log}
+          commit={commit}
           branches={this.props.branches}
           branchActivity={this.branchActivity}
           changeBranchActivity={(index, value) => (this.branchActivity[index] = value)}
@@ -48,7 +48,7 @@ class CommitHistory extends Component {
   }
 
   render() {
-    return !this.props.logs ? null : (
+    return !this.props.commits ? null : (
       <table className="commit-history">
         <thead>
           <tr>

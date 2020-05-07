@@ -51,7 +51,7 @@ function RepositoryManagement({ currentFolder, dispatch }) {
           }}
         />
         <div className="content">
-          <CommitHistory logs={currentFolder.logs} branches={currentFolder.branches} currentBranch={currentFolder.current}/>
+          <CommitHistory commits={currentFolder.commits} branches={currentFolder.branches} currentBranch={currentFolder.current}/>
         </div>
       </div>
     </div>

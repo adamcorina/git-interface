@@ -25,8 +25,8 @@ export const setBranchInfo = (branchInfo) => ({
   ...branchInfo,
 });
 
-export const appendLogs = (branchInfo) => ({
-  type: "APPEND_LOGS",
+export const appendCommits = (branchInfo) => ({
+  type: "APPEND_COMMITS",
   ...branchInfo,
 });
 
@@ -63,7 +63,7 @@ export const getBranchInfo = (path, branchName, startFrom = null, activeBranches
       if (!startFrom) {
         dispatch(setBranchInfo(branchInfo));
       } else {
-        dispatch(appendLogs(branchInfo));
+        dispatch(appendCommits(branchInfo));
       }
     });
   };
