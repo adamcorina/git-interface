@@ -11,7 +11,6 @@ import "./commit-history.css";
 class CommitHistory extends Component {
   constructor(props) {
     super(props);
-    this.branchActivity = Array(props.branches.length).fill(false);
     this.registerToScrollEvent();
   }
 
@@ -19,29 +18,28 @@ class CommitHistory extends Component {
     window.onscroll = debounce(() => {
       if (window.innerHeight + document.documentElement.scrollTop === document.documentElement.offsetHeight) {
         const commitEntries = Object.entries(this.props.commits);
-        const hashLastEntry = commitEntries[commitEntries.length - 1][1][0].hash.split(" ")[0];
+        const hashLastEntry = commitEntries[commitEntries.length - 1][0].split(" ")[0];
         this.props.dispatch(
-          getBranchInfo(this.props.currentFolder.path, this.props.currentFolder.current, hashLastEntry, this.props.currentFolder.activeBranches)
+          getBranchInfo(
+            this.props.currentFolder.path,
+            this.props.currentFolder.current,
+            hashLastEntry,
+            this.props.currentFolder.activeBranches
+          )
         );
       }
     }, 100);
   }
 
-  componentDidUpdate(prevProps) {
-    if (this.props.currentBranch !== prevProps.currentBranch) {
-      this.branchActivity.fill(false);
-    }
-  }
-
   renderRows() {
     const commitEntries = Object.entries(this.props.commits);
-    return commitEntries.map((commit) => {
+    return commitEntries.map((commit, index) => {
       return (
         <CommitRow
+          olderCommit={index === 0 ? null : commitEntries[index - 1]}
           commit={commit}
           branches={this.props.branches}
-          branchActivity={this.branchActivity}
-          changeBranchActivity={(index, value) => (this.branchActivity[index] = value)}
+          currentBranch={this.props.currentBranch}
         />
       );
     });
@@ -54,7 +52,7 @@ class CommitHistory extends Component {
           <tr>
             <th className="branches">
               {this.props.branches.map((branch) => (
-                <div className={`branch ${branch}`}></div>
+                <div className="branch" key={branch}></div>
               ))}
             </th>
             <th>Commit</th>

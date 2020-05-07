@@ -213,7 +213,7 @@ const mergeLogs = (branchesData, currentActiveBranches) => {
       }
       branchesData[latestCommitBranchIndex].index++;
       if (!mergedLogs[latestCommit.hash.split(" ")[0]]) {
-        mergedLogs[latestCommit.hash.split(" ")[0]] = {logs: []};
+        mergedLogs[latestCommit.hash.split(" ")[0]] = { logs: [] };
       }
       mergedLogs[latestCommit.hash.split(" ")[0]] = {
         logs: [

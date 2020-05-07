@@ -7,26 +7,14 @@ class CommitRow extends Component {
       <tr key={this.props.commit[0]}>
         <td className="branches">
           {this.props.branches.map((branch, index) => {
-            let isCommonCommit = false;
-            if (branch === this.props.commit[1].logs[0]["branch"]) {
-              this.props.changeBranchActivity(index, true);
-            }
-            if (this.props.branchActivity[index] === true && this.props.commit[1].logs.length > 1) {
-              this.props.commit[1].logs.slice(1).forEach((commit) => {
-                if (commit.branch === branch) {
-                  isCommonCommit = true;
-                  this.props.changeBranchActivity(index, false);
-                }
-              });
-            }
             return (
-              <div className="branch">
+              <div className="branch" key={branch}>
                 {branch === this.props.commit[1].logs[0]["branch"]
                   ? "*"
-                  : isCommonCommit
-                  ? "J"
-                  : this.props.branchActivity[index]
+                  : this.props.commit[1].branchActivity[index]
                   ? "|"
+                  : this.props.olderCommit && this.props.olderCommit[1].branchActivity[index]
+                  ? "J"
                   : ""}
               </div>
             );
