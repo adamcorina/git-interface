@@ -1,6 +1,10 @@
 .commit-history {
-  width: 100%;
+  width: 85%;
   overflow: scroll;
+}
+
+.commit-history tbody tr {
+  height: 30px;
 }
 
 .commit-history tbody td,
@@ -18,7 +22,7 @@
 
 .commit-history tbody td:nth-last-of-type(4),
 .commit-history thead th:nth-last-of-type(4) {
-  width: 30%;
+  width: 35%;
 }
 
 .commit-history tbody td:nth-last-of-type(3),
@@ -28,24 +32,12 @@
 
 .commit-history tbody td:nth-last-of-type(2),
 .commit-history thead th:nth-last-of-type(2) {
-  width: 20%;
+  width: 25%;
 }
 
 .commit-history tbody td:nth-last-of-type(1),
 .commit-history thead th:nth-last-of-type(1) {
-  width: 15%;
-}
-
-.commit-history tbody .branches,
-.commit-history thead .branches {
-  width: 15%;
-  display: inline-flex;
-}
-
-.commit-history tbody .branches .branch {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 20%;
 }
 
 .commit-history tbody td div {
@@ -61,4 +53,27 @@
   border: 1px solid white;
   border-radius: 2px;
   padding: 2px;
+}
+
+.branches {
+  width: 15%;
+  display: flex;
+  flex-direction: column;
+  padding-top: 58px;
+  overflow-x: scroll;
+}
+
+.branches > div {
+  height: 32px;
+  display: flex;
+  overflow-x: visible;
+  width: fit-content;
+}
+
+.branches > div .branch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 20px;
 }

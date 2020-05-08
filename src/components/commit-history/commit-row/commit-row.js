@@ -17,21 +17,6 @@ class CommitRow extends Component {
     });
     return (
       <tr key={this.props.commit[0]}>
-        <td className="branches">
-          {this.props.activeBranches.map((branch, index) => {
-            return (
-              <div className="branch" key={branch}>
-                {branch === this.props.commit[1].logs[0]["branch"]
-                  ? "*"
-                  : this.props.commit[1].branchActivity[index]
-                  ? "|"
-                  : this.props.olderCommit && this.props.olderCommit[1].branchActivity[index]
-                  ? "J"
-                  : ""}
-              </div>
-            );
-          })}
-        </td>
         <td>
           <div>{heads.length ? headsToRender : ""} {this.props.commit[1].logs[0]["message"]}</div>
         </td>

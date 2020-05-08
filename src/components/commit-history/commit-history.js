@@ -46,24 +46,46 @@ class CommitHistory extends Component {
     });
   }
 
+  renderCommitTree() {
+    const commitEntries = Object.entries(this.props.commits);
+    return commitEntries.map((commit, commitIndex) => {
+      return (
+        <div>
+          {this.props.currentFolder.activeBranches.map((branch, branchIndex) => {
+            const olderCommit = commitIndex === 0 ? null : commitEntries[commitIndex - 1];
+            return (
+              <div className="branch" key={branch}>
+                {branch === commit[1].logs[0]["branch"]
+                  ? "*"
+                  : commit[1].branchActivity[branchIndex]
+                  ? "|"
+                  : olderCommit && olderCommit[1].branchActivity[branchIndex]
+                  ? "J"
+                  : ""}
+              </div>
+            );
+          })}
+        </div>
+      );
+    });
+  }
+
   render() {
     return !this.props.commits ? null : (
-      <table className="commit-history">
-        <thead>
-          <tr>
-            <th className="branches">
-              {this.props.branches.map((branch) => (
-                <div className="branch" key={branch}></div>
-              ))}
-            </th>
-            <th>Description</th>
-            <th>Commit</th>
-            <th>Author</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-        <tbody>{this.renderRows()}</tbody>
-      </table>
+      <>
+        <div className="branches">{this.renderCommitTree()}</div>
+        <table className="commit-history">
+          <thead>
+            <tr>
+              <th>Description</th>
+              <th>Commit</th>
+              <th>Author</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>{this.renderRows()}</tbody>
+        </table>
+      </>
     );
   }
 }
