@@ -4,7 +4,7 @@
 }
 
 .commit-history tbody tr {
-  height: 30px;
+  height: 28px;
 }
 
 .commit-history tbody td,
@@ -64,7 +64,7 @@
 }
 
 .branches > div {
-  height: 32px;
+  height: 30px;
   display: flex;
   overflow-x: visible;
   width: fit-content;

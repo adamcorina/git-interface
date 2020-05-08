@@ -48,20 +48,98 @@ class CommitHistory extends Component {
 
   renderCommitTree() {
     const commitEntries = Object.entries(this.props.commits);
+    const colors = ["aqua", "lime", "orange", "purple", "red", "silver", "teal", "white", "yellow"];
     return commitEntries.map((commit, commitIndex) => {
       return (
         <div>
           {this.props.currentFolder.activeBranches.map((branch, branchIndex) => {
             const olderCommit = commitIndex === 0 ? null : commitEntries[commitIndex - 1];
+            let lastMergedBranchIndex = null;
+            let firstMergedBranchIndex = null;
+            if (commit[1].logs.length > 1) {
+              for (let i = commit[1].logs.length - 1; i >= 0 && lastMergedBranchIndex == null; i--) {
+                const branchPosition = this.props.currentFolder.activeBranches.indexOf(commit[1].logs[i].branch);
+                if (
+                  branchPosition > -1 &&
+                  commit[1].logs[i].branch !== branch &&
+                  olderCommit &&
+                  olderCommit[1].branchActivity[branchPosition]
+                ) {
+                  lastMergedBranchIndex = branchPosition;
+                }
+              }
+              firstMergedBranchIndex = this.props.currentFolder.activeBranches.indexOf(commit[1].logs[0].branch);
+            }
+
             return (
               <div className="branch" key={branch}>
-                {branch === commit[1].logs[0]["branch"]
-                  ? "*"
-                  : commit[1].branchActivity[branchIndex]
-                  ? "|"
-                  : olderCommit && olderCommit[1].branchActivity[branchIndex]
-                  ? "J"
-                  : ""}
+                {branch === commit[1].logs[0]["branch"] ? (
+                  <svg height="30" width="20">
+                    {lastMergedBranchIndex !== null ? (
+                      <line
+                        x1="10"
+                        y1="15"
+                        x2="20"
+                        y2="15"
+                        strokeWidth="2"
+                        stroke={colors[lastMergedBranchIndex]}
+                      ></line>
+                    ) : null}
+                    <circle cx="10" cy="15" r="5" fill={colors[branchIndex]} />
+                    {olderCommit && olderCommit[1].branchActivity[branchIndex] ? (
+                      <line x1="10" y1="0" x2="10" y2="30" strokeWidth="2" stroke={colors[branchIndex]}></line>
+                    ) : (
+                      <line x1="10" y1="15" x2="10" y2="30" strokeWidth="2" stroke={colors[branchIndex]}></line>
+                    )}
+                  </svg>
+                ) : commit[1].branchActivity[branchIndex] ? (
+                  <svg height="30" width="20">
+                    <line x1="10" y1="0" x2="10" y2="30" stroke-width="2" stroke={colors[branchIndex]}></line>
+                    {lastMergedBranchIndex !== null &&
+                    lastMergedBranchIndex > branchIndex &&
+                    branchIndex > firstMergedBranchIndex ? (
+                      <line
+                        x1="0"
+                        y1="15"
+                        x2="20"
+                        y2="15"
+                        strokeWidth="2"
+                        stroke={colors[lastMergedBranchIndex]}
+                      ></line>
+                    ) : null}
+                  </svg>
+                ) : olderCommit && olderCommit[1].branchActivity[branchIndex] ? (
+                  <svg height="30" width="20">
+                    <path d="M -12 15.5 q 27 2 21 -20" stroke={colors[branchIndex]} stroke-width="2" fill="none" />
+                    {lastMergedBranchIndex !== null &&
+                    lastMergedBranchIndex > branchIndex &&
+                    branchIndex > firstMergedBranchIndex ? (
+                      <line
+                        x1="0"
+                        y1="15"
+                        x2="20"
+                        y2="15"
+                        strokeWidth="2"
+                        stroke={colors[lastMergedBranchIndex]}
+                      ></line>
+                    ) : null}
+                  </svg>
+                ) : (
+                  <svg height="30" width="20">
+                    {lastMergedBranchIndex !== null &&
+                    lastMergedBranchIndex > branchIndex &&
+                    branchIndex > firstMergedBranchIndex ? (
+                      <line
+                        x1="0"
+                        y1="15"
+                        x2="20"
+                        y2="15"
+                        strokeWidth="2"
+                        stroke={colors[lastMergedBranchIndex]}
+                      ></line>
+                    ) : null}
+                  </svg>
+                )}
               </div>
             );
           })}
