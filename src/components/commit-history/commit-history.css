@@ -13,16 +13,17 @@
 
 .commit-history thead th {
   padding: 30px 1% 10px 1%;
+  text-align: left;
 }
 
 .commit-history tbody td:nth-last-of-type(4),
 .commit-history thead th:nth-last-of-type(4) {
-  width: 10%;
+  width: 30%;
 }
 
 .commit-history tbody td:nth-last-of-type(3),
 .commit-history thead th:nth-last-of-type(3) {
-  width: 30%;
+  width: 10%;
 }
 
 .commit-history tbody td:nth-last-of-type(2),
@@ -41,7 +42,7 @@
   display: inline-flex;
 }
 
-.commit-history tbody .branches .branch{
+.commit-history tbody .branches .branch {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -53,4 +54,11 @@
   text-overflow: ellipsis;
   min-width: 0;
   width: 100%;
+}
+
+.commit-history span.tag {
+  font-size: xx-small;
+  border: 1px solid white;
+  border-radius: 2px;
+  padding: 2px;
 }

@@ -55,8 +55,8 @@ class CommitHistory extends Component {
                 <div className="branch" key={branch}></div>
               ))}
             </th>
-            <th>Commit</th>
             <th>Description</th>
+            <th>Commit</th>
             <th>Author</th>
             <th>Date</th>
           </tr>
