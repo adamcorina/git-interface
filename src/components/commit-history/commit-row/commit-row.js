@@ -5,9 +5,12 @@ class CommitRow extends Component {
   render() {
     const heads = [];
     this.props.commit[1].logs.forEach((log) => {
-      if (log.refs.indexOf("HEAD ->") > -1) {
-        heads.push(log.refs);
-      }
+      const logParts = log.refs.split(", ")
+      logParts.forEach(logPart => {
+        if (logPart.indexOf("HEAD ->") > -1) {
+          heads.push(logPart);
+        }
+      })
     });
     let headsToRender = heads.map((head) => {
       return <span className="tag">{head}</span>;
