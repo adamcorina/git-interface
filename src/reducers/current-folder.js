@@ -20,7 +20,7 @@ const currentFolder = (
         commit[1].branchActivity = commitIndex
           ? [...commitEntries[commitIndex - 1][1].branchActivity]
           : Array(state.branches.length).fill(false);
-        state.branches.map((branch, branchIndex) => {
+        action.activeBranches.map((branch, branchIndex) => {
           if (branch === commit[1].logs[0]["branch"]) {
             commit[1].branchActivity[branchIndex] = true;
           }
@@ -48,7 +48,7 @@ const currentFolder = (
           ? [...newCommitEntries[commitIndex - 1][1].branchActivity]
           : oldCommitEntries[oldCommitEntries.length - 1][1].branchActivity;
 
-        state.branches.map((branch, branchIndex) => {
+        action.activeBranches.map((branch, branchIndex) => {
           if (branch === commit[1].logs[0]["branch"]) {
             commit[1].branchActivity[branchIndex] = true;
           }
@@ -65,6 +65,7 @@ const currentFolder = (
       return {
         ...state,
         commits: { ...state.commits, ...action.commits },
+        activeBranches: action.activeBranches
       };
     default:
       return state;

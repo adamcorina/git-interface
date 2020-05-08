@@ -39,6 +39,7 @@ class CommitHistory extends Component {
           olderCommit={index === 0 ? null : commitEntries[index - 1]}
           commit={commit}
           branches={this.props.branches}
+          activeBranches={this.props.currentFolder.activeBranches}
           currentBranch={this.props.currentBranch}
         />
       );
