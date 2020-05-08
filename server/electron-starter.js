@@ -16,12 +16,12 @@ const repositories = require("./db/repositories.json");
 let mainWindow;
 
 function createWindow() {
-  BrowserWindow.addDevToolsExtension(
-    path.join(
-      os.homedir(),
-      "/Library/Application Support/Google/Chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/4.6.0_0"
-    )
-  );
+  // BrowserWindow.addDevToolsExtension(
+  //   path.join(
+  //     os.homedir(),
+  //     "/Library/Application Support/Google/Chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/4.6.0_0"
+  //   )
+  // );
 
   mainWindow = new BrowserWindow({
     width: 1250,

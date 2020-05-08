@@ -62,7 +62,7 @@ class CommitHistory extends Component {
     ];
     return commitEntries.map((commit, commitIndex) => {
       return (
-        <div>
+        <div key={`branches${commitIndex}`}>
           {this.props.currentFolder.activeBranches.map((branch, branchIndex) => {
             const olderCommit = commitIndex === 0 ? null : commitEntries[commitIndex - 1];
             let lastMergedBranchIndex = null;
@@ -105,7 +105,7 @@ class CommitHistory extends Component {
                   </svg>
                 ) : commit[1].branchActivity[branchIndex] ? (
                   <svg height="30" width="20">
-                    <line x1="10" y1="0" x2="10" y2="30" stroke-width="2" stroke={colors[branchIndex]}></line>
+                    <line x1="10" y1="0" x2="10" y2="30" strokeWidth="2" stroke={colors[branchIndex]}></line>
                     {lastMergedBranchIndex !== null &&
                     lastMergedBranchIndex > branchIndex &&
                     branchIndex > firstMergedBranchIndex ? (
@@ -121,7 +121,7 @@ class CommitHistory extends Component {
                   </svg>
                 ) : olderCommit && olderCommit[1].branchActivity[branchIndex] ? (
                   <svg height="30" width="20">
-                    <path d="M -12 15.5 q 27 2 21 -20" stroke={colors[branchIndex]} stroke-width="2" fill="none" />
+                    <path d="M -12 15.5 q 27 2 21 -20" stroke={colors[branchIndex]} strokeWidth="2" fill="none" />
                     {lastMergedBranchIndex !== null &&
                     lastMergedBranchIndex > branchIndex &&
                     branchIndex > firstMergedBranchIndex ? (
