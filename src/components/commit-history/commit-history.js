@@ -48,7 +48,18 @@ class CommitHistory extends Component {
 
   renderCommitTree() {
     const commitEntries = Object.entries(this.props.commits);
-    const colors = ["aqua", "lime", "orange", "purple", "red", "silver", "teal", "white", "yellow"];
+    const colors = [
+      "#d6cbd3",
+      "#92a8d1",
+      "orange",
+      "purple",
+      "#80ced6",
+      "#eca1a6",
+      "lime",
+      "teal",
+      "white",
+      "yellow",
+    ];
     return commitEntries.map((commit, commitIndex) => {
       return (
         <div>
