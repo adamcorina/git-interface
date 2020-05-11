@@ -235,7 +235,7 @@ const getBranchInfo = (event, uuid, data) => {
     simpleGit.checkout(data.branchName, (selectedBranchCheckoutError) => {
       if (!selectedBranchCheckoutError) {
         const options = {
-          "-n40": null,
+          "-n60": null,
           "--first-parent": null,
           format: {
             hash: "%H %P",
