@@ -251,7 +251,11 @@ const getBranchInfo = (event, uuid, data) => {
           options[data.startFrom] = null;
         }
         simpleGit.log(options, (selectedBranchLogError, selectedBranchLogInfo) => {
-          if (!selectedBranchLogError && selectedBranchLogInfo.all.length > 1) {
+          if (
+            !selectedBranchLogError &&
+            ((data.startFrom && selectedBranchLogInfo.all.length > 1) ||
+              (!data.startFrom && selectedBranchLogInfo.all.length > 0))
+          ) {
             const selectedBranchNewLogInfo = data.startFrom
               ? selectedBranchLogInfo.all.slice(1)
               : selectedBranchLogInfo.all;
