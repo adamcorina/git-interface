@@ -48,18 +48,7 @@ class CommitHistory extends Component {
 
   renderCommitTree() {
     const commitEntries = Object.entries(this.props.commits);
-    const colors = [
-      "#d6cbd3",
-      "#92a8d1",
-      "orange",
-      "purple",
-      "#80ced6",
-      "#eca1a6",
-      "lime",
-      "teal",
-      "white",
-      "yellow",
-    ];
+    const colors = ["#d6cbd3", "#92a8d1", "orange", "purple", "#80ced6", "#eca1a6", "lime", "teal", "white", "yellow"];
     return commitEntries.map((commit, commitIndex) => {
       return (
         <div key={`branches${commitIndex}`}>
@@ -93,19 +82,40 @@ class CommitHistory extends Component {
                         x2="20"
                         y2="15"
                         strokeWidth="2"
-                        stroke={colors[lastMergedBranchIndex]}
+                        stroke={colors[lastMergedBranchIndex % colors.length]}
                       ></line>
                     ) : null}
-                    <circle cx="10" cy="15" r="5" fill={colors[branchIndex]} />
+                    <circle cx="10" cy="15" r="5" fill={colors[branchIndex % colors.length]} />
                     {olderCommit && olderCommit[1].branchActivity[branchIndex] ? (
-                      <line x1="10" y1="0" x2="10" y2="30" strokeWidth="2" stroke={colors[branchIndex]}></line>
+                      <line
+                        x1="10"
+                        y1="0"
+                        x2="10"
+                        y2="30"
+                        strokeWidth="2"
+                        stroke={colors[branchIndex % colors.length]}
+                      ></line>
                     ) : (
-                      <line x1="10" y1="15" x2="10" y2="30" strokeWidth="2" stroke={colors[branchIndex]}></line>
+                      <line
+                        x1="10"
+                        y1="15"
+                        x2="10"
+                        y2="30"
+                        strokeWidth="2"
+                        stroke={colors[branchIndex % colors.length]}
+                      ></line>
                     )}
                   </svg>
                 ) : commit[1].branchActivity[branchIndex] ? (
                   <svg height="30" width="20">
-                    <line x1="10" y1="0" x2="10" y2="30" strokeWidth="2" stroke={colors[branchIndex]}></line>
+                    <line
+                      x1="10"
+                      y1="0"
+                      x2="10"
+                      y2="30"
+                      strokeWidth="2"
+                      stroke={colors[branchIndex % colors.length]}
+                    ></line>
                     {lastMergedBranchIndex !== null &&
                     lastMergedBranchIndex > branchIndex &&
                     branchIndex > firstMergedBranchIndex ? (
@@ -115,13 +125,18 @@ class CommitHistory extends Component {
                         x2="20"
                         y2="15"
                         strokeWidth="2"
-                        stroke={colors[lastMergedBranchIndex]}
+                        stroke={colors[lastMergedBranchIndex % colors.length]}
                       ></line>
                     ) : null}
                   </svg>
                 ) : olderCommit && olderCommit[1].branchActivity[branchIndex] ? (
                   <svg height="30" width="20">
-                    <path d="M -12 15.5 q 27 2 21 -20" stroke={colors[branchIndex]} strokeWidth="2" fill="none" />
+                    <path
+                      d="M -12 15.5 q 27 2 21 -20"
+                      stroke={colors[branchIndex % colors.length]}
+                      strokeWidth="2"
+                      fill="none"
+                    />
                     {lastMergedBranchIndex !== null &&
                     lastMergedBranchIndex > branchIndex &&
                     branchIndex > firstMergedBranchIndex ? (
@@ -131,7 +146,7 @@ class CommitHistory extends Component {
                         x2="20"
                         y2="15"
                         strokeWidth="2"
-                        stroke={colors[lastMergedBranchIndex]}
+                        stroke={colors[lastMergedBranchIndex % colors.length]}
                       ></line>
                     ) : null}
                   </svg>
@@ -146,7 +161,7 @@ class CommitHistory extends Component {
                         x2="20"
                         y2="15"
                         strokeWidth="2"
-                        stroke={colors[lastMergedBranchIndex]}
+                        stroke={colors[lastMergedBranchIndex % colors.length]}
                       ></line>
                     ) : null}
                   </svg>
